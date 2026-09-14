@@ -1,10 +1,10 @@
 {
   "domains": {
-    "argon1025-trading": {}
+    "argon1025-side": {}
   },
   "repos": {
     "trendlog-backend": {
-      "domain": "argon1025-trading",
+      "domain": "argon1025-side",
       "remotes": [
         "github.com/argon1025/trendlog-backend"
       ],

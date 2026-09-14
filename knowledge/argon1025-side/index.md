@@ -1,12 +1,12 @@
 ---
-description: argon1025-trading 레포 소관·의존 방향·변경 파급을 볼 때
+description: argon1025-side 레포 소관·의존 방향·변경 파급을 볼 때
 updated: 2026-09-14
 verified: 2026-09-14
 ---
 
-# argon1025-trading
+# argon1025-side
 
-증권·트레이딩 영역의 개인 프로젝트 레포 모음
+개인 사이드 프로젝트 레포 모음
 
 ## 레포 구성
 
