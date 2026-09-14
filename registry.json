@@ -3,6 +3,13 @@
     "argon1025-side": {}
   },
   "repos": {
+    "my-claude-plugin-market": {
+      "domain": "argon1025-side",
+      "remotes": [
+        "github.com/argon1025/my-claude-plugin-market"
+      ],
+      "branch": "main"
+    },
     "trendlog-backend": {
       "domain": "argon1025-side",
       "remotes": [

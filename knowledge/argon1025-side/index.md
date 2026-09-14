@@ -13,3 +13,4 @@ verified: 2026-09-14
 | 레포 | 스택 | 접점 | 소관 |
 |---|---|---|---|
 | trendlog-backend | Java 25 · Spring Boot 4.0.7 · Spring Data JPA · MySQL · Maven | — | 아직 정해지지 않음 |
+| my-claude-plugin-market | Claude Code 플러그인 마켓플레이스 · Markdown · Python 3 | — | 아직 정해지지 않음 |
