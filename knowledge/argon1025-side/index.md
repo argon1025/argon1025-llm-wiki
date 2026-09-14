@@ -14,3 +14,9 @@ verified: 2026-09-14
 |---|---|---|---|
 | trendlog-backend | Java 25 · Spring Boot 4.0.7 · Spring Data JPA · MySQL · Maven | — | 아직 정해지지 않음 |
 | my-claude-plugin-market | Claude Code 플러그인 마켓플레이스 · Markdown · Python 3 | — | 아직 정해지지 않음 |
+
+## 역인덱스
+
+| 업무 영역 | 관련 레포(역할) |
+|---|---|
+| 위키 사실 관리·플러그인 규약 | my-claude-plugin-market(llm-wiki 플러그인) |
