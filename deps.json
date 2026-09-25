@@ -1,3 +1,13 @@
 {
-  "deps": {}
+  "deps": {
+    "personal-stock-trading/pigeon-trade-dashboard": [
+      {
+        "to": "personal-stock-trading/pigeon-trade",
+        "kind": "http",
+        "contracts": [
+          "GET /api/* — 대시보드 데이터 조회"
+        ]
+      }
+    ]
+  }
 }

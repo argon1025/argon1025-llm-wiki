@@ -27,6 +27,23 @@
             "시세 동기화 대상 종목 풀 관리"
           ],
           "hosts": {}
+        },
+        "pigeon-trade-dashboard": {
+          "project": "https://github.com/argon1025",
+          "remote": "github.com/argon1025/pigeon-trade-dashboard",
+          "defaultBranch": "main",
+          "status": "active",
+          "stack": [
+            "TypeScript",
+            "Next.js 16",
+            "React 19",
+            "Tailwind CSS"
+          ],
+          "summary": "추세매매 에이전트 대시보드 프론트엔드",
+          "responsibilities": [
+            "종목 시세·판단 기록·모의 체결 현황 화면 제공"
+          ],
+          "hosts": {}
         }
       }
     }
