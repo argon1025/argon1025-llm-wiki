@@ -1,5 +1,6 @@
 ---
 description: LLM 탐색기의 성공·기각이나 이전률을 판정할 때
+type: policy
 ---
 
 # MVP 검증 가설과 판정 기준
