@@ -7,8 +7,12 @@ type: convention
 
 ## 중립 타입
 
-- 증권사 시세 인터페이스(BrokerageMarketData)는 증권사 중립 타입(Decimal, luxon DateTime, 불투명 cursor)으로 반환함 — 토스 원형 타입 재사용안은 증권사 교체 시 호출자 코드가 바뀌어 기각
+- 증권사 시세 인터페이스(BrokerageMarketData)는 증권사 중립 타입(Decimal, luxon DateTime)으로 반환함 — 토스 원형 타입 재사용안은 증권사 교체 시 호출자 코드가 바뀌어 기각
 - 중립 통화 타입(BrokerageCurrency)은 'KRW' | 'USD' 닫힌 유니온으로 유지함 — PR #3 리뷰의 개방 유니온 제안은 기각
+
+## 캔들 조회 위치
+
+- 캔들 조회 위치를 증권사 불투명 커서로 받아 백필 진행 테이블에 보관하는 안은 기각 — 추가 구조 도입
 
 ## 인터페이스 구성
 
@@ -20,9 +24,15 @@ type: convention
 - 새 증권사 구현체는 src/brokerage/strategy/{provider}/에 두고 클래스명은 *Strategy로 짓고 토큰 발급·보관은 구현체 내부에서 처리함
 - 증권사 구현체의 MikroORM 엔티티는 서비스 옆이 아니라 src/brokerage/strategy/{provider}/entity/ 하위에 둠
 
+## 호출 제한 관리
+
+- 증권사 계층(src/brokerage/)은 전략별 증권사 선택만 맡고 봉 조회 개수 같은 호출 제한을 관리하지 않으며, 캔들 페이지 크기는 호출자가 상수로 관리해 count로 넘김 — 증권사 구현체가 count 기본값을 채우는 안은 기각
+
 ## 예외 처리
 
 - 시세 전략 실패(BrokerageException)에서 증권사 응답 400·404까지 502로 변환하는 안은 기각 — 없는 종목을 호출자가 status로 구분할 수 없음
+- 증권사 요청 한도 초과(429)를 502 대신 별도 status로 바꾸는 안은 기각 — 종목 등록 API의 502 BROKERAGE_UNAVAILABLE 응답 계약 유지
+- 요청 한도 초과 판정은 호출자가 토스 error.code나 TossInvestException이 아닌 중립 속성(BrokerageException.rateLimited)으로만 함
 
 ## 종목 식별
 
