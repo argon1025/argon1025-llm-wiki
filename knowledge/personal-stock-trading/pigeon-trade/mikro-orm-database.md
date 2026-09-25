@@ -12,3 +12,11 @@ type: convention
 ## 마이그레이션
 
 - 마이그레이션 테이블 DDL은 `default character set utf8mb4`만 붙고 collation을 지정하지 않아 서버 설정(`utf8mb4_unicode_ci`)과 달리 테이블은 MySQL 8 기본값 `utf8mb4_0900_ai_ci`로 생성됨
+
+## 심볼 collation 의존
+
+- 테이블 collation을 바꾸면 종목 심볼(stock.symbol) 대소문자 처리를 코드로 옮겨야 함 — unique 인덱스와 조회의 대소문자 무시가 코드가 아니라 collation(`utf8mb4_0900_ai_ci`)에 의존함
+
+## datetime 소수 초
+
+- 소수 초 없는 datetime 컬럼(stock.created_at)은 저장 직후 반환한 엔티티 값은 밀리초를 담고 이후 조회 값은 `.000`으로 잘려, 등록 응답과 목록 조회의 시각이 밀리초 단위로 다름
