@@ -10,6 +10,10 @@ type: convention
 - 증권사 시세 인터페이스(BrokerageMarketData)는 증권사 중립 타입(Decimal, luxon DateTime, 불투명 cursor)으로 반환함 — 토스 원형 타입 재사용안은 증권사 교체 시 호출자 코드가 바뀌어 기각
 - 중립 통화 타입(BrokerageCurrency)은 'KRW' | 'USD' 닫힌 유니온으로 유지함 — PR #3 리뷰의 개방 유니온 제안은 기각
 
+## 인터페이스 구성
+
+- 종목 정보 조회(getStocks)를 시세 인터페이스(BrokerageMarketData)와 별도 인터페이스로 나누는 안은 기각 — 구현체가 증권사당 하나이고 같은 토큰·예외 흐름이라 구현 하나뿐인 추상화
+
 ## 구현체 선택과 위치
 
 - 증권사 구현체 선택은 BROKERAGE_PROVIDER 환경변수와 Nest useFactory로 함 — 모듈 코드에서 useClass로 직접 지정하는 안은 기각
