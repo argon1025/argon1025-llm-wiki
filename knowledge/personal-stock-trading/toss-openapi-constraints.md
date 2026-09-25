@@ -27,9 +27,20 @@ type: external
 - 여러 클라이언트에서 토큰을 발급하면 서로의 토큰을 끊음 — 토큰 발급(`POST /oauth2/token`)은 재발급 즉시 이전 토큰을 무효화하고 refresh token이 없음
 - 시세 API 토큰 오류는 401과 `error.code`(`invalid-token`·`expired-token`·`token-revoked`·`login-user-not-found`)로 오며 `token-revoked`는 다른 곳의 재발급으로 무효화된 토큰을 뜻함
 - 존재하지 않는 종목 조회 시 404와 `error.code` `stock-not-found`를 반환함
+- 종목 정보 조회(`GET /api/v1/stocks`)만 예외로 존재하지 않는 심볼을 404 없이 `result`에서 빼고 응답함 — 명세 응답 코드에도 404가 없음(실호출 확인 2026-09-25)
+
+## 종목 식별
+
+- 모든 조회는 증권사 심볼(`symbol`·`symbols`)로만 받고 국제증권식별번호(isinCode)는 종목 정보 조회(`GET /api/v1/stocks`)·상장 종목 목록(`GET /api/v1/stocks/all`) 응답에만 있음
+
+## 레이트 리밋
+
+- 레이트 리밋 수치는 명세에 없고 429 응답 헤더(X-RateLimit-Limit·X-RateLimit-Remaining·X-RateLimit-Reset·Retry-After)만 정의됨 — 실계정 헤더로 측정 필요
+- 레이트 리밋 그룹(Rate Limits Group)은 캔들 MARKET_DATA_CHART·종목 정보 STOCK·상장 종목 목록 STOCK_ALL로 나뉨
 
 ## 캔들 데이터
 
 - 캔들 수집·리플레이에 정규장(15:30) 이후 시간외 봉이 섞임 — 1분봉(1m)은 20:00 KST 봉까지 제공됨
+- 1분봉(1m)을 모아도 일봉(1d)이 되지 않음 — 1m에 20:00 KST까지 시간외 봉이 섞이고 시가·종가는 단일가로 정해지며 미국 1m은 일부 거래소 기준임
 - 일봉(1d) 다음 페이지 커서(`nextBefore`)는 페이지 마지막 봉의 직전 거래일 현지 자정(휴장일 건너뜀)이고 `before`는 inclusive라 받은 값을 그대로 넘기면 봉 중복 없이 이어짐
 - 거래소 현지 시각은 응답 오프셋이 아닌 종목 시장 시간대로 따로 변환해야 함 — 미국 종목(AAPL 등)도 시각을 +09:00 오프셋으로 반환함
