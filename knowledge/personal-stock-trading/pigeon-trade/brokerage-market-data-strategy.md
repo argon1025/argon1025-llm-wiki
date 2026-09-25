@@ -19,3 +19,12 @@ type: convention
 ## 예외 처리
 
 - 시세 전략 실패(BrokerageException)에서 증권사 응답 400·404까지 502로 변환하는 안은 기각 — 없는 종목을 호출자가 status로 구분할 수 없음
+
+## 종목 식별
+
+- 시세 인터페이스(BrokerageMarketData)의 종목 입력은 국제증권식별번호(ISIN)이고 증권사 심볼 변환은 구현체 책임임 — 증권사 교체 시 호출자 코드가 바뀌지 않음
+- 종목 정보 조회(getStocks)만 증권사 심볼을 받음 — ISIN을 모르는 종목 등록 시점의 편의 경로
+- ISIN·증권사 심볼 매핑은 증권사 전용 테이블로 src/brokerage/strategy/{provider}/entity/에 둠 — provider 공용 매핑 테이블안은 기각
+- 토스 매핑 행이 없는 ISIN은 토스 7개 시장 전체를 재조회함 — 토스는 외국 종목도 국내·미국 시장에 상장시켜 ISIN 국가 접두어로 시장을 추정할 수 없음
+- 캔들 등 하위 테이블의 종목 참조는 ISIN 대신 종목 대리키(stock.id)를 씀 — ISIN도 기업 재편 시 바뀔 수 있음
+- 수집 배치(Cron)는 종목의 ISIN(stock.isin_code)으로, 사용자 API는 서비스 고유 심볼을 받아 종목 테이블에서 ISIN을 찾아 시세 인터페이스를 호출함
