@@ -13,6 +13,7 @@ type: convention
 ## 린트 규칙 예외 방식
 
 - 읽기 전용 인자 타입 규칙(`prefer-readonly-parameter-types`)은 끄지 않고 `treatMethodsAsReadonly: true`와 `allow`로 수정 불가능한 외부 클래스(`@nestjs/config`의 `ConfigService`)만 예외 처리함(`.oxlintrc.json`)
+- 같은 규칙은 EntityManager와 MikroORM defineEntity 콜백 인자에 `Readonly<>`를 붙여도 경고를 내며 이 경고는 `allow`에 넣지 않고 남겨 둠
 
 ## 포맷 스크립트 함정
 
