@@ -35,12 +35,17 @@ type: external
 
 ## 레이트 리밋
 
-- 레이트 리밋 수치는 명세에 없고 429 응답 헤더(X-RateLimit-Limit·X-RateLimit-Remaining·X-RateLimit-Reset·Retry-After)만 정의됨 — 실계정 헤더로 측정 필요
-- 레이트 리밋 그룹(Rate Limits Group)은 캔들 MARKET_DATA_CHART·종목 정보 STOCK·상장 종목 목록 STOCK_ALL로 나뉨
+- 레이트 리밋 수치는 명세에 없고 429 응답 헤더(X-RateLimit-Limit·X-RateLimit-Remaining·X-RateLimit-Reset·Retry-After)로 정의되며 이 헤더는 성공 응답에도 붙음 (실호출 확인 2026-09-25)
+- 레이트 리밋 초과 시 429·Retry-After: 1·`error.code` `rate-limit-exceeded`를 반환함 (실호출 확인 2026-09-25)
+- 레이트 리밋 그룹(Rate Limits Group)은 캔들 조회(`GET /api/v1/candles`) MARKET_DATA_CHART·현재가·호가·체결·상하한가 조회 MARKET_DATA·종목 정보 STOCK·상장 종목 목록 STOCK_ALL로 나뉨
+- 레이트 리밋 한도는 캔들 조회(MARKET_DATA_CHART) 초당 20회(X-RateLimit-Reset: 1)·현재가·호가·체결·상하한가 조회(MARKET_DATA) 초당 15회이고 두 그룹은 따로 계산됨 (실호출 확인 2026-09-25)
 
 ## 캔들 데이터
 
 - 캔들 수집·리플레이에 정규장(15:30) 이후 시간외 봉이 섞임 — 1분봉(1m)은 20:00 KST 봉까지 제공됨
 - 1분봉(1m)을 모아도 일봉(1d)이 되지 않음 — 1m에 20:00 KST까지 시간외 봉이 섞이고 시가·종가는 단일가로 정해지며 미국 1m은 일부 거래소 기준임
+- 캔들 조회 경계 시각(`before`)은 밀리초(19:58:59.999+09:00)와 UTC Z 표기(10:58:59.999Z)를 모두 받아 1m·1d 모두 같은 결과를 줌 (실호출 확인 2026-09-26)
+- 국내 종목 1분봉(1m)은 거래일당 08:01~20:00 KST 720봉임 (실호출 확인 2026-09-25)
+- 1분봉(1m) 다음 페이지 커서(`nextBefore`)는 페이지 마지막 봉 시각의 1분 전(거래일 경계에서는 직전 거래일 20:00 KST)이라 그대로 넘기면 페이지 간 중복 없음 (실호출 확인 2026-09-25)
 - 일봉(1d) 다음 페이지 커서(`nextBefore`)는 페이지 마지막 봉의 직전 거래일 현지 자정(휴장일 건너뜀)이고 `before`는 inclusive라 받은 값을 그대로 넘기면 봉 중복 없이 이어짐
 - 거래소 현지 시각은 응답 오프셋이 아닌 종목 시장 시간대로 따로 변환해야 함 — 미국 종목(AAPL 등)도 시각을 +09:00 오프셋으로 반환함
