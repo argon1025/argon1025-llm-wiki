@@ -26,7 +26,6 @@ type: convention
 
 - 연동 예외는 공통 부모(`IntegrationException`) 아래 연동별 단일 예외(`TossInvestException`)만 두고 실패 유형은 status 유무와 응답 본문으로 구분함 — HTTP·타임아웃·네트워크 유형별 하위 예외는 기각
 - 연동 예외의 요청 헤더·바디는 `Authorization` 토큰과 `client_secret`까지 원문 그대로 담으므로 로그 외부 전송이나 운영 배포 전에 마스킹을 먼저 도입해야 함 — 로컬 프로젝트라 에러 파악 우선
-- Retry-After 기반 재시도를 넣으려면 연동 예외(`IntegrationException`)에 응답 헤더 보존을 먼저 추가해야 함 — 토스 HTTP 클라이언트(`TossInvestHttpClient`)와 연동 예외는 응답 헤더를 보존하지 않고 시세 전략이 429를 502로 바꿈
 
 ## 인증
 
