@@ -21,7 +21,6 @@ type: convention
 
 - 소수 초 없는 datetime 컬럼(stock.created_at)은 저장 직후 반환한 엔티티 값은 밀리초를 담고 이후 조회 값은 `.000`으로 잘려, 등록 응답과 목록 조회의 시각이 밀리초 단위로 다름
 
-## 공유 개발 DB 마이그레이션 오염
+## 요청 밖 EntityManager
 
-- 모든 worktree가 공유하는 개발 DB(pigeon_trade)의 candle 테이블에는 엔티티에 없는 인덱스(candle_stock_id_index)가 있음
-- 마이그레이션 스냅샷 diff에서 candle 변경을 걸러냄 — 마이그레이션 생성(migration:create)이 이 인덱스를 스냅샷에 싣거나 검사(migration:check)가 drop 마이그레이션을 제안함
+- HTTP 요청 밖(Cron·@OnEvent 리스너)에서는 주입된 EntityManager 대신 `em.fork()`로 만든 EM을 씀 — MikroORM 전역 컨텍스트(allowGlobalContext)가 꺼져 있어 주입된 EM으로 조회하면 전역 컨텍스트 오류
