@@ -10,3 +10,4 @@ type: convention
 - e2e의 스키마 초기화(orm.schema.refresh())는 현재 엔티티에 없는 테이블을 지우지 않음
 - 다른 브랜치·worktree가 공유 테스트 DB pigeon_trade_test에 남긴 stock 참조 FK 테이블이 있으면 `Cannot drop table 'stock' referenced by a foreign key constraint`로 e2e 전 스위트가 실패함
 - 이때는 잔존 테이블을 테스트 DB에서 직접 drop함
+- 다른 worktree와 e2e를 동시 실행해 난 FK 잔존 테이블 오류·무작위 실패는 잔존 테이블 drop 후 재실행해 판정함 — 공유 테스트 DB에서 서로의 orm.schema.refresh()·clear()가 끼어듦
