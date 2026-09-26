@@ -8,6 +8,7 @@ type: convention
 ## nullable 타입 좁히기
 
 - `defineEntity`의 `.nullable()` 속성은 `T | null | undefined`로 추론되어 `!== null` 비교로는 좁혀지지 않으므로 `typeof`·`instanceof`로 좁힘
+- nullable 다대일 참조(manyToOne)는 `?.id ?? null`로 좁힘 — `defineEntity`로 정의한 엔티티는 클래스가 아닌 상수라 `instanceof`로 좁힐 수 없음
 
 ## 마이그레이션
 
@@ -19,7 +20,15 @@ type: convention
 
 ## datetime 소수 초
 
-- 소수 초 없는 datetime 컬럼(stock.created_at)은 저장 직후 반환한 엔티티 값은 밀리초를 담고 이후 조회 값은 `.000`으로 잘려, 등록 응답과 목록 조회의 시각이 밀리초 단위로 다름
+- 소수 초 없는 datetime 컬럼(stock.created_at·agent_decision.created_at)은 저장 직후 반환한 엔티티 값은 밀리초를 담고 저장 값은 밀리초를 초 단위로 반올림해, 등록 응답과 이후 조회의 시각이 다름
+
+## exclude 조회 타입
+
+- 제외 조회와 전체 조회가 함께 쓰는 변환 메서드는 필요한 속성만 `Pick`으로 받음 — `em.find`에 `exclude`를 주면 반환 타입의 `Loaded`에서 그 속성이 빠져 전체 엔티티 타입 인자에 넘길 수 없음
+
+## FK 인덱스
+
+- MikroORM이 만든 FK 단독 인덱스(agent_decision.stock_id)는 복합 인덱스와 중복으로 보여도 지우지 않음 — FK 컬럼이 선두가 아닌 복합 인덱스((wallet_id, stock_id, id))는 FK를 받치지 못함
 
 ## 요청 밖 EntityManager
 
