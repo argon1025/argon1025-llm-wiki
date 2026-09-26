@@ -1,5 +1,5 @@
 ---
-description: 대시보드가 캔들 조회 API를 호출하는 방식이나 CORS 설정 여부를 다룰 때
+description: 대시보드가 캔들 조회 API를 호출하는 방식이나 CORS 허용 origin을 다룰 때
 type: policy
 ---
 
@@ -7,4 +7,5 @@ type: policy
 
 ## 규칙
 
-- 캔들 조회 API는 CORS를 설정하지 않음 — 대시보드가 Next.js 서버 측 fetch면 불필요, 브라우저 직접 호출 필요해지면 app.enableCors를 별도 작업으로 추가
+- pigeon-trade API의 CORS 허용 origin은 환경 변수 CORS_ORIGINS(쉼표 구분 목록)로 관리 — 비어 있거나 없으면 CORS를 켜지 않음
+- 로컬 대시보드 origin http://localhost:3001을 허용함
