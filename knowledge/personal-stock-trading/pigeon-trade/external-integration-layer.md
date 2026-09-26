@@ -11,6 +11,7 @@ type: convention
 - 상위 계층이 import하는 module·exception은 연동 루트에 둠 — exception을 `client/`에 두는 안은 기각
 - 인터페이스는 사용하는 레이어 폴더 하위(`api/interface/`, `client/interface/`)에 둠 — 연동 루트 `interface/`는 여러 레이어가 공유하는 타입이 생길 때만 만듦
 - 명세 인터페이스 파일은 외부 문서 태그 단위로 나눔 — API 1종당 1파일안은 기각
+- 공식 SDK가 있어도 자체 fetch 클라이언트(client/·api/ 분리)로 구현함 — SDK의 재시도·에러 클래스 이점보다 의존성 추가와 예외 변환 래퍼 부담이 큼
 
 ## 명세 타입 명명
 
@@ -26,6 +27,7 @@ type: convention
 
 - 연동 예외는 공통 부모(`IntegrationException`) 아래 연동별 단일 예외(`TossInvestException`)만 두고 실패 유형은 status 유무와 응답 본문으로 구분함 — HTTP·타임아웃·네트워크 유형별 하위 예외는 기각
 - 연동 예외의 요청 헤더·바디는 `Authorization` 토큰과 `client_secret`까지 원문 그대로 담으므로 로그 외부 전송이나 운영 배포 전에 마스킹을 먼저 도입해야 함 — 로컬 프로젝트라 에러 파악 우선
+- 연동 계층은 429·529 등에도 재시도 없이 예외만 발행함 — 재시도 필요 여부는 상위 계층에서 결정
 
 ## 인증
 
