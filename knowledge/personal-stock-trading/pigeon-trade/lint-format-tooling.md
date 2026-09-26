@@ -14,6 +14,8 @@ type: convention
 
 - 읽기 전용 인자 타입 규칙(`prefer-readonly-parameter-types`)은 끄지 않고 `treatMethodsAsReadonly: true`와 `allow`로 수정 불가능한 외부 클래스(`@nestjs/config`의 `ConfigService`)만 예외 처리함(`.oxlintrc.json`)
 - 같은 규칙은 EntityManager와 MikroORM defineEntity 콜백 인자에 `Readonly<>`를 붙여도 경고를 내며 이 경고는 `allow`에 넣지 않고 남겨 둠
+- 소수 자릿수 인자 규칙(unicorn `require-number-to-fixed-digits-argument`)은 decimal.js `Decimal#toFixed()`도 Number로 오인해 경고함
+- 응답 DTO의 decimal 문자열 변환은 `toFixed()`를 인자 없이 호출하고 이 경고를 그대로 둠 — 인자를 주면 소수 자릿수가 고정되어 값이 바뀜(`src/market-data/dto/get-candles.response.ts`)
 
 ## 포맷 스크립트 함정
 
