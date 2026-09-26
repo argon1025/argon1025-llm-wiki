@@ -20,7 +20,3 @@ type: convention
 ## datetime 소수 초
 
 - 소수 초 없는 datetime 컬럼(stock.created_at)은 저장 직후 반환한 엔티티 값은 밀리초를 담고 이후 조회 값은 `.000`으로 잘려, 등록 응답과 목록 조회의 시각이 밀리초 단위로 다름
-
-## 마이그레이션 스냅샷 필터링
-
-- 공유 개발 DB pigeon_trade의 candle 테이블에는 엔티티에 없는 candle_stock_id_index가 있어 migration:create/check가 이를 스냅샷에 싣거나 drop 마이그레이션을 제안하므로, 마이그레이션 생성 시 스냅샷 diff에서 candle 변경을 걸러내야 함
