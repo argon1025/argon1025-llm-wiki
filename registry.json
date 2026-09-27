@@ -32,7 +32,7 @@
         "pigeon-trade-dashboard": {
           "project": "https://github.com/argon1025",
           "remote": "github.com/argon1025/pigeon-trade-dashboard",
-          "defaultBranch": "main",
+          "defaultBranch": "develop",
           "status": "active",
           "stack": [
             "TypeScript",
