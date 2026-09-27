@@ -15,5 +15,5 @@ type: convention
 
 ## enum 배열 동기화
 
-- 시장·통화(BrokerageMarket·BrokerageCurrency)의 응답 DTO Swagger enum은 satisfies 배열로 따로 적음 — 런타임 값이 없는 타입 유니언
+- 시장·통화(Market·Currency)의 응답 DTO Swagger enum은 satisfies 배열로 따로 적음 — 런타임 값이 없는 타입 유니언
 - 시장·통화 값이 늘면 응답 DTO 2종의 enum 배열을 함께 갱신 — 타입 검사가 누락을 잡지 못함
