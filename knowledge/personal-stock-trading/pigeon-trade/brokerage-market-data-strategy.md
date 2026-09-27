@@ -8,7 +8,7 @@ type: convention
 ## 중립 타입
 
 - 증권사 시세 인터페이스(BrokerageMarketData)는 증권사 중립 타입(Decimal, luxon DateTime)으로 반환함 — 토스 원형 타입 재사용안은 증권사 교체 시 호출자 코드가 바뀌어 기각
-- 중립 통화 타입(BrokerageCurrency)은 'KRW' | 'USD' 닫힌 유니온으로 유지함 — PR #3 리뷰의 개방 유니온 제안은 기각
+- 통화 타입(Currency)은 'KRW' | 'USD' 닫힌 유니온으로 유지함 — PR #3 리뷰의 개방 유니온 제안은 기각
 
 ## 캔들 조회 위치
 
