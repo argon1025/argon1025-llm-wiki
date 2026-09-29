@@ -45,6 +45,32 @@
           "hosts": {}
         }
       }
+    },
+    "personal-claude-tooling": {
+      "description": "개인 Claude Code 플러그인·에이전트 도구 레포 모음",
+      "repos": {
+        "my-claude-plugin-market": {
+          "remote": "https://github.com/argon1025/my-claude-plugin-market.git",
+          "defaultBranch": "main",
+          "status": "active",
+          "stack": [
+            "Claude Code 플러그인",
+            "Markdown",
+            "Python 3",
+            "Bash"
+          ],
+          "summary": "개인 AI Tools 프로젝트",
+          "responsibilities": [
+            "세션 시작 산출물 작성 규약 주입(better-communication)",
+            "PR 생성·AI 코드리뷰·리뷰 반영 스킬(pr-workflow)",
+            "계획 수립·실행 스킬과 작업 기록 규약(plan-workflow)",
+            "에이전트 위키 초기화·레포 등록·머지 반영·자료 반영 스킬(agent-wiki)",
+            "위키 문서 규약과 레포 지도 검증·세션 주입 스크립트(agent-wiki)",
+            "플러그인 마켓플레이스 등록 정보와 버전 관리"
+          ],
+          "hosts": {}
+        }
+      }
     }
   }
 }
