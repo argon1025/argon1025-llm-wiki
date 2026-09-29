@@ -3,10 +3,7 @@
     "personal-stock-trading/pigeon-trade-dashboard": [
       {
         "to": "personal-stock-trading/pigeon-trade",
-        "kind": "http",
-        "contracts": [
-          "GET /api/* — 대시보드 데이터 조회"
-        ]
+        "desc": "종목·캔들·지표·시장 달력·지갑(주문·체결·입금) REST API를 src/lib/api 클라이언트에서 호출"
       }
     ]
   }

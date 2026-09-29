@@ -4,7 +4,7 @@
       "description": "개인 주식 트레이딩 레포 모음",
       "repos": {
         "pigeon-trade": {
-          "remote": "github.com/argon1025/pigeon-trade",
+          "remote": "https://github.com/argon1025/pigeon-trade.git",
           "defaultBranch": "develop",
           "status": "active",
           "stack": [
@@ -29,7 +29,7 @@
           "hosts": {}
         },
         "pigeon-trade-dashboard": {
-          "remote": "github.com/argon1025/pigeon-trade-dashboard",
+          "remote": "https://github.com/argon1025/pigeon-trade-dashboard.git",
           "defaultBranch": "develop",
           "status": "active",
           "stack": [
