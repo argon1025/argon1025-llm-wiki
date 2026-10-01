@@ -8,6 +8,8 @@ description: 토스 Open API 명세를 확인하거나 시세 응답·한도를 
 
 - 토스 1d 캔들의 nextBefore를 다음 요청 before에 그대로 넘기면 봉 중복 없이 이어짐 — nextBefore는 페이지 마지막 봉의 직전 거래일 현지 자정(주말·휴장일 건너뜀)이고 before는 inclusive임
 - 1m을 과거에서 앞으로 쌓으려면 before를 워터마크 + 200분(1m 200봉)으로 요청함 — 토스 캔들 조회(GET /api/v1/candles)는 before·count(최대 200)로 과거 방향 페이지만 받고 시작 시각을 주는 순방향 조회가 없음
+- 토스 캔들 조회(GET /api/v1/candles)의 1m은 before 페이지네이션으로 최소 2026-07-31까지 과거를 돌려줌
+- 토스 캔들 조회로 받은 과거 1m을 저장 30m 집계와 같은 UTC 버킷으로 30m 집계하면 종가가 저장된 30m 봉과 일치함
 - 토스 종목정보 조회(GET /api/v1/stocks) 결과에 요청 심볼이 없으면 없는 종목(STOCK_NOT_FOUND)으로 판정함 — 토스가 존재하지 않는 심볼을 오류 없이 result에서 빼고 응답함
 - 토스 시세 API는 존재하지 않는 종목이면 404와 error.code stock-not-found를 반환함
 - 토스 캔들 조회(GET /api/v1/candles, MARKET_DATA_CHART)의 한도는 초당 20회(X-RateLimit-Limit 20, Reset 1)이며 성공 응답에도 X-RateLimit-* 헤더가 붙음
