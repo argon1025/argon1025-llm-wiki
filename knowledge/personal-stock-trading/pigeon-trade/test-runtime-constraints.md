@@ -7,6 +7,7 @@ description: vitest 테스트나 실DB e2e spec을 작성·수정·실행할 때
 ## 규칙
 
 - Nest 앱을 띄운 테스트로 HTTP 부품을 검증하지 않고 부품별 단위 테스트로 검증함 — vitest는 esbuild 변환이라 `emitDecoratorMetadata`를 내보내지 않아 생성자 주입과 `ValidationPipe`의 DTO 판별이 동작하지 않음
+- HTTP 요청 밖(Cron·`@OnEvent`)에서 불리는 조회 경로는 e2e spec에서 전역 `orm.em`으로 만든 서비스로 검증함 — `orm.em.fork()`로 만든 서비스로는 요청 밖 전역 컨텍스트 오류가 드러나지 않음
 
 ## 함정
 
