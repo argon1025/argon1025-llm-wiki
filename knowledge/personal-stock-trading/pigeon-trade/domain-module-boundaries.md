@@ -23,3 +23,4 @@ description: 도메인 모듈 폴더를 나누거나 모듈 사이 의존·공�
 
 - 시세 도메인 폴더를 기능별 폴더로 나누는 안은 기각함
 - `{Domain}ExternalService` 대신 토큰·인터페이스·DI 파사드로 설계하는 안은 기각함 — 단순한 external service 파일 하나로 충분함
+- market-data가 국면을 판정해 결과를 이벤트로 싣는 안은 기각하고 stock 도메인(`StockModule`)이 캔들 조회·Jev 호출로 판정·저장함 — 판정 창 전체의 30m 봉 조회가 필요해 이벤트 단계를 늘리지 않으려 함

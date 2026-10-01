@@ -15,6 +15,7 @@ description: 메인 에이전트용 MCP 도구를 추가하거나 지갑 연결�
 - MCP 도구는 에이전트의 조회·주문 실행·판단 기록 동작만 노출함 — 지갑 생성·입금·종목 등록 같은 관리 동작은 REST 전용임
 - MCP 판단 기록 도구(record_decision)는 type을 TRADE로 고정하고 action은 BUY·SELL·HOLD·WAIT만 받음 — Jev의 REGIME 기록은 실행 루프가 REST로 직접 호출함
 - MCP 도구 성공 응답은 REST 응답 data와 같은 JSON 텍스트임 — 도구별 요약 텍스트 포매터안은 추가 코드 부담으로 기각함
+- MCP 종목 목록 도구(list_stocks)는 `GET /api/stocks` 응답 항목과 같되 국면 필드(regime·regimeConfidence·regimeTimestamp·regimeModel)를 담지 않음 — 국면은 사용자 대시보드 참고용 정보임
 - 서비스 예외는 isError와 `{ responseCode, message }` JSON으로 반환함
 
 ## 함정
