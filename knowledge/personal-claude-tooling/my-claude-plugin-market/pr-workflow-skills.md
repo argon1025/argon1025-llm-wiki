@@ -20,11 +20,10 @@ description: pr-workflow의 create·review·fix 스킬이나 PR 코멘트 규약
 
 ### review
 
-- review는 리뷰 룰을 2층으로 적용하며, Layer 1은 스택 감지로 고른 체크리스트(checklists), Layer 2는 세션에 주입된 agent-wiki 문서 목록(레포 전용·도메인 공유)에서 PR이 만지는 문서임
+- review는 리뷰 룰을 2층으로 적용하며, Layer 1은 스택 감지로 고른 체크리스트(checklists), Layer 2는 세션 사전 정보에서 PR과 관련해 고른 프로젝트 문서임
 - Layer 1과 Layer 2가 충돌하면 Layer 2가 이김
-- agent-wiki 문서 목록이 세션에 주입되지 않았으면 한 번 알리고 Layer 1만 씀
+- 고를 Layer 2 문서가 없으면 review는 Layer 1만 쓰고 부재를 보고의 적용 룰 소스 Layer 2 칸에 없음으로만 드러내며, 다른 플러그인 미설치 알림이나 구 룰 파일(.claude/pr-review-rules.md) 이관 안내는 하지 않음
 - review가 서브에이전트에 넘기는 {CHECKLIST_PATHS}와 Layer 2 {MATCHED_DOCS}는 절대 경로여야 함 — 서브에이전트는 ${CLAUDE_PLUGIN_ROOT}를 확장하지 못하고 세션에 주입된 위키 문서 목록도 물려받지 못해, 미확장 경로는 Read가 조용히 실패해 룰 없이 리뷰가 돌아감
-- 구 룰 파일 .claude/pr-review-rules.md는 review가 읽지 않으며, 있으면 /agent-wiki:add로 위키에 옮기라고 한 번 안내함
 - review의 suggestion_code는 코멘트로 게시하지 않고 보고에만 남김 — 코멘트 수정·삭제가 불가한 호스트가 있어 틀린 코드가 스레드에 남으면 되돌리기 어려움
 
 ### fix
