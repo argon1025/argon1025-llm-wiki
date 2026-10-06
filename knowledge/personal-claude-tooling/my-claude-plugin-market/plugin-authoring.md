@@ -15,5 +15,6 @@ description: 플러그인 스킬 문서·설명 문구를 쓰거나 버전을 �
 - 스킬 SKILL.md는 mktemp -d 결과를 셸 변수가 아니라 {tmp} 자리표시자로 옮겨 이후 명령에 쓰게 함 — Claude Code Bash 도구 호출 사이에는 셸 변수가 유지되지 않음
 - 플러그인 버전을 올리는 PR은 그 플러그인 plugin.json의 version과 marketplace.json의 metadata.version을 함께 올림
 - 플러그인 기능을 바꾸면 그 플러그인 plugin.json의 version은 minor 자리를 올림
+- 이 마켓플레이스의 플러그인 본문은 다른 플러그인의 이름·명령·파일명·내부 구조를 지목하지 않고, 세션에 주입된 사전 정보(위키·문서 목록·작업 기록)가 있을 때만 찾아 읽는 간접 문구로 적음 — 각 플러그인은 단독 설치로도 문구가 틀리지 않아야 함
 - 플러그인별 version 원본은 marketplace.json이 아니라 각 플러그인의 plugin.json임
 - 플러그인 버전은 과거에 쓴 번호를 재사용하지 않고 이력보다 높게 잡음 — 캐시가 ~/.claude/plugins/cache/{marketplace}/{plugin}/{version}/ 폴더 단위라 옛 번호를 다시 쓰면 옛 본문이 로드될 수 있음
