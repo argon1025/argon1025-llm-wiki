@@ -1,13 +1,13 @@
 ---
-description: plan-workflow 세션 훅 설정 파일·feedback 근거를 다룰 때
+description: plan-workflow 세션 훅 설정 파일·plan 선행 읽기·feedback 근거를 다룰 때
 ---
 
 # plan-workflow 작업 기록 규약
 
 ## 규칙
 
-- agent-wiki add가 입력으로 받는 plan-workflow의 feedback.md는 항목 source:(그 사실을 정한 문서의 이름·판본, 이슈 키, 정책 문서 또는 사용자 확인 YYYY-MM-DD)의 판본·날짜가 위키 기존 값과의 충돌을 가리는 근거가 됨
-- feedback.md 항목에 source: 지목이 없으면 agent-wiki add가 그 항목을 코드 관찰로 취급함
+- plan-workflow의 feedback.md에서 같은 대상을 다르게 적은 기록이 있으면 항목 source:(그 사실을 정한 문서의 이름·판본, 이슈 키, 정책 문서 또는 사용자 확인 YYYY-MM-DD)의 판본·날짜가 최신 값을 가리는 근거가 됨
+- plan.md의 선행 읽기 절은 세션 주입 문서를 절대 경로로 적음 — 실행은 새 세션에서 시작하므로 주입 형식에 기대지 않고도 열려야 함
 
 ## 함정
 
