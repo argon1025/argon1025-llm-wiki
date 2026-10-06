@@ -12,6 +12,7 @@ description: 위키 문서 규약(doc-contract)의 위치·문서 단위·예시
 
 - 공유 라이브러리 enum에 코드 한 줄만 더한 diff는 update가 문서를 남기지 않고 끝남 — update 추출은 diff 밖 코드를 읽지 않아 그 값이 DB·공통코드로 레포 밖에 넘어가는지 알 수 없음, 공유 코드값 표를 채우려면 소비 레포 코드 확인이 필요함
 - update 추출이 이동·이름 변경을 제거로 오판하거나 값을 잘못 읽으면 규약 제거·다른 값 조항에 따라 맞는 문장이 지워지거나 덮어써짐 — 두 조항은 머지 diff 밖 근거를 요구하지 않으며, 검토의 근거 머지 시점 코드 확인과 이후 audit 스킬이 보정함
+- 세션 주입 문서 목록(generate_document_list)에서 도메인 공유 문서 description을 빼도 update·add의 같은 주제 문서 대조는 그대로 동작함 — 규약 7장 대조 목록은 apply 절차가 임시 clone의 frontmatter에서 만듦
 
 ## 결정
 
