@@ -13,3 +13,10 @@ description: 개인판 agent-wiki 변경을 사내판 마켓플레이스로 미�
 - 개인판 agent-wiki 변경은 사내판 마켓플레이스의 plugins/agent-wiki로 미러링함
 - 미러링할 때 사내판 plugins/agent-wiki의 config.json·references/publish.md·README.md 3파일은 개인판 파일로 덮어쓰지 않음 — 세 파일은 사내판 고유 내용을 담음
 - 개인판 변경이 고친 문구가 사내판 고유 3파일에도 있으면 그 문구만 개인판과 같게 고침
+- 사내판 고유 게시 절차 파일(publish.md)은 위키 원격이 Bitbucket인 사내판의 PR 게시 절차를 담음
+- 개인판 게시 절차 파일(publish.md)은 위키 원격 호스트별 게시 수행 방안을 따로 안내하지 않음
+- 개인판 agent-wiki와 사내판 plugins/agent-wiki는 두 위키의 등록 slug가 겹치지 않으면 같은 workspace.root(`~/.agent-wiki-workspace`)를 공유해도 됨 — 워크스페이스는 {slug} 폴더 단위 clone임
+
+## 함정
+
+- 개인판과 사내판의 wiki.baseRoot가 같은 경로(개인판 기본값 `~/.agent-wiki`)이면 나중에 끝난 쪽 위키를 다른 쪽 주입이 읽음 — 두 세션 시작 훅의 위키 동기화(sync_wiki.py)가 그 위키 사본을 각자의 원격(GitHub main·Bitbucket master)으로 remote set-url·강제 checkout해 경합함
