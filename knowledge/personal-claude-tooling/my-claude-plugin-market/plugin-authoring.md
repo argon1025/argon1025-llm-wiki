@@ -16,3 +16,4 @@ description: 플러그인 스킬 문서·설명 문구를 쓰거나 버전을 �
 - 플러그인 버전을 올리는 PR은 그 플러그인 plugin.json의 version과 marketplace.json의 metadata.version을 함께 올림
 - 플러그인 기능을 바꾸면 그 플러그인 plugin.json의 version은 minor 자리를 올림
 - 플러그인별 version 원본은 marketplace.json이 아니라 각 플러그인의 plugin.json임
+- 플러그인 버전은 과거에 쓴 번호를 재사용하지 않고 이력보다 높게 잡음 — 캐시가 ~/.claude/plugins/cache/{marketplace}/{plugin}/{version}/ 폴더 단위라 옛 번호를 다시 쓰면 옛 본문이 로드될 수 있음
