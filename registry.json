@@ -81,7 +81,7 @@
       "repos": {
         "edu-fit-backend": {
           "remote": "https://github.com/argon1025/edu-fit-backend.git",
-          "defaultBranch": "main",
+          "defaultBranch": "develop",
           "status": "active",
           "stack": [
             "TypeScript",
@@ -110,7 +110,7 @@
         },
         "edu-fit-frontend": {
           "remote": "https://github.com/argon1025/edu-fit-frontend.git",
-          "defaultBranch": "main",
+          "defaultBranch": "develop",
           "status": "active",
           "stack": [
             "TypeScript",
