@@ -14,8 +14,16 @@ description: 요청 DTO의 길이·날짜·boolean·page 상한·PATCH null 검�
 - DTO 밖에서 들어오는 문자열(FileService.upload)은 저장 전 Array.from(value).length로 코드 포인트 길이를 확인해 상한을 넘으면 400 INVALID_REQUEST로 거부함 — 확인하지 않으면 varchar 상한을 넘는 값이 Data too long 500이 됨
 - UTF-8 바이트 상한 검사(isWithinDetailsBytes)는 DTO 안에서 Buffer.byteLength(value, 'utf8')로 함 — mysql2가 저장하는 값(짝 없는 서로게이트는 U+FFFD 3 bytes)과 같음
 - 날짜 문자열 검증(DirectorCreateCourseRequest)은 IsISO8601({ strict: true })와 /^[1-9]\d{3}-\d{2}-\d{2}$/u 정규식을 함께 써 MySQL date 지원 범위의 YYYY-MM-DD만 받음
+- 요청 DTO의 중첩 객체 필드(DirectorAssignTaskRequest)는 @ValidateNested()에 @IsObject()를 함께 둠 — @ValidateNested()만 두면 배열(빈 배열 포함)이 통과함
+- 객체 배열 요청 필드(TeacherSaveDeliverableRequest)는 @IsObject({ each: true })를 함께 둠 — ValidateNested가 원소 자리의 배열을 다시 펼쳐 검증해 통과시킴
+- UTC 시각 입력 DTO(DirectorCreateLessonRequest)는 형식 정규식(@Matches)과 @IsISO8601({ strict: true })를 함께 둠 — 정규식만 두면 2026-02-30·24:00·60초가 통과해 luxon DateTime.fromISO가 24:00을 다음 날 00:00으로 해석함
+- UTC 시각 입력 DTO의 형식 정규식은 Z 접미만 받아 @IsISO8601이 허용하는 오프셋 입력을 거름 — 오프셋 입력은 UTC 변환 뒤 연도가 MySQL datetime 범위를 벗어날 수 있음
+- 요청의 회원·파일 ID 숫자(fileIds 원소, studentId 쿼리 등)는 @Min(1)·@Max(4_294_967_295)로 int unsigned 범위를 검증함 — 상한이 없으면 지수 표기 값(1e300)이 SQL에 들어감
+- 자유 문자열을 MySQL 8 JSON 컬럼에 저장하는 요청 필드(산출물 keywords 등)는 짝 없는 서로게이트를 \P{Cs} 정규식으로 400 INVALID_REQUEST 거부함 — JSON 컬럼은 짝 없는 서로게이트를 이스케이프한 JSON 텍스트를 ERROR 3140으로 거부해 500이 되며 varchar·text 컬럼은 해당하지 않음
 
 ## 함정
 
 - class-validator @IsByteLength는 encodeURI로 바이트를 세어 짝 없는 서로게이트 입력에 URIError를 던져 500이 됨
 - IsISO8601({ strict: true })만으로는 시각이 붙은 값도 통과함
+- @Param('...', ParseIntPipe) 경로 ID가 int unsigned 범위 밖이면 20자리 이하 정수(4294967296)는 통과해 조회 결과 없음(404)이 되고 21자리 이상 정수는 1e+21 표기가 되어 400 INVALID_REQUEST가 됨 — 전역 ValidationPipe(transform: true)가 ParseIntPipe보다 먼저 Number로 바꿈
+- 요청 DTO 한 속성에 @Matches를 두 번 달면 둘 다 실패할 때(빈 문자열) 400 메시지에 첫 번째 사유만 남음 — class-validator가 제약을 이름(matches)으로 묶음

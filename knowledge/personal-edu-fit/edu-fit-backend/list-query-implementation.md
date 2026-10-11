@@ -13,3 +13,4 @@ description: 목록 조회에서 검색어 LIKE·서브쿼리 조건·이름 정
 ## 결정
 
 - 원장 수업 설정 목록(getCourses)은 이름 정렬 External 조회나 정렬용 이름 컬럼 저장 없이 조건에 맞는 설정 전체를 메모리에서 정렬해 페이지를 자름(의도적 단순화) — 설정 수천 건 이하 규모를 전제로 하며 수만 건이 되면 둘 중 하나로 바꿔야 함
+- 최신 수업 기록 조회(findLatestLessonNotes)는 윈도 함수 원시 SQL 대신 em.find 두 번(식별 컬럼 fields: ['lesson'] 조회 → 고른 기록만 refresh: true 재조회)으로 수업별 최신 기록을 고름

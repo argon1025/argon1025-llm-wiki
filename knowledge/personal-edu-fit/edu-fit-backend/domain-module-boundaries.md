@@ -28,6 +28,12 @@ description: 도메인 모듈 경계·External 의존·DTO·interface 재사용�
 - 공용 ResponseCode의 UNAUTHORIZED·FORBIDDEN·NOT_FOUND·INVALID_REQUEST는 도메인 응답 코드 파일에 다시 정의하지 않음 — 같은 code를 두 도메인이 정의하면 응답 message는 던진 쪽 항목을 따름
 - External 서비스가 던지는 응답 코드(TEACHER_NOT_FOUND·ASSIGNEE_NOT_FOUND·INQUIRY_AXIS_NOT_FOUND·FILE_NOT_FOUND·FILE_NOT_OWNED 등)는 그 External 서비스가 있는 도메인 응답 코드 파일(예 MemberResponseCode)에만 정의하고 소비 도메인 응답 코드 파일에 다시 정의하지 않음
 - 소비 도메인 컨트롤러는 External 서비스가 던지는 응답 코드를 Swagger 오류 응답(ApiErrorResponse)에 적을 때 그 External 서비스 도메인의 응답 코드 객체(예 FileResponseCode)를 import해 씀
+- 같은 역할 안의 서비스끼리는 주입해 쓰고 역할 간 서비스 의존은 두지 않음(예 원장 업무 서비스 DirectorTaskService가 원장 댓글 서비스의 addComment를, 역할별 업무 서비스가 같은 역할 산출물 서비스의 findDeliverable을 호출)
+- 역할 서비스들이 공유하는 도메인 규칙은 도메인 루트 함수(toTaskCommentContent·findLatestLessonNotes·assertAchievementItemRanges 등)로 둠 — 역할 서비스끼리 import하지 않고 규칙을 바꿀 때 그 함수만 고침
+- 성취도 원장·선생·학생 서비스는 잠금·조회·응답 조합을 공유하지 않고 서비스마다 따로 둠
+- 선생 리포트 서비스는 담당 범위 밖 학생 거부에 회원 응답 코드(MemberResponseCode)의 STUDENT_NOT_FOUND를 import해 던지고 리포트 응답 코드(ReportResponseCode)에 다시 정의하지 않음
+- 수업·수업 기록·리포트 서비스는 응답에 싣는 학생·선생·작성자 ID를 모아 회원 이름 조회(MemberExternalService.findUsersByIds)를 요청당 한 번 호출함
+- 수업·수업 기록·리포트 서비스는 회원 이름 조회 결과에 참조한 회원이 없으면 기본값 없이 데이터 정합성 Error(500)를 던짐(requireName·requireAuthorName) — 회원은 하드 삭제 경로가 없어 참조 대상이 없으면 오류로 봄
 
 ## 함정
 

@@ -16,8 +16,13 @@ description: HTTP API 컨트롤러·응답 DTO·Swagger를 구현하거나 앱 �
 - 파일 스트림 응답은 @Res()로 직접 pipe하지 않고 new StreamableFile(stream, { type, length, disposition })을 반환함 — 전역 ApiResponseInterceptor가 StreamableFile 반환값만 envelope로 감싸지 않고 통과시킴
 - 스트림을 반환하는 핸들러는 @Res({ passthrough: true }) 응답의 close 이벤트에서 스트림을 destroy하고 이미 끊긴 응답이면 바로 닫음 — Nest ExpressAdapter는 StreamableFile 스트림을 pipe만 하고 연결이 끊겨도 원본 스트림을 닫지 않음
 - 업무 컨트롤러에서 @Get('calendar')는 @Get(':taskId')보다 먼저 선언함 — 뒤에 두면 calendar가 업무 ID로 해석되어 ParseIntPipe가 400을 냄
+- 바이트 상한을 둔 text 요청 필드는 Swagger maxLength 없이 설명에 바이트 기준을 적음
+- JSON 본문 파서(app.useBodyParser('json', { limit: '1mb' }))는 configureApp에서 enableCors 뒤, listen·init 전에 등록함 — enableCors 앞이면 본문 파싱 오류 400 응답에 CORS 헤더가 빠지고 init 뒤면 기본 100kb 파서가 등록됨
+- 전역 ValidationPipe(createValidationPipe)의 검증 오류 펼침은 형제를 역순으로 쌓는 스택으로 선언 순서 깊이 우선을 선형 시간에 유지함 — shift()·unshift(...children)로 펼치면 오류 수 제곱 시간이 걸리고 자식 오류가 약 14만 개를 넘으면 전개 인자 한도 RangeError로 500이 됨
+- 전역 ValidationPipe(createValidationPipe)의 객체 속성 100개 상한 검사는 class-transformer 변환 전에 하며 커스텀 데코레이터 값은 검사하지 않음 — 변환의 속성 이름 중복 제거가 속성 수 제곱에 비례함
 
 ## 함정
 
 - @Public() 핸들러에서 @CurrentUser()를 쓰면 401 UNAUTHORIZED로 응답함 — @Public() API에는 request.user가 없음
-- JSON 요청 본문이 Express 기본 body-parser 한도 100KB를 넘으면 PayloadTooLargeError를 전역 ApiExceptionFilter가 500 INTERNAL_SERVER_ERROR로 응답함 — 65535 bytes 이하 수업 설정 세부사항(details)이라도 이스케이프가 많아 본문이 100KB를 넘으면 400이 아닌 500이 됨
+- 전역 예외 필터(ApiExceptionFilter)는 status 400~499이고 expose가 true인 Error를 type 문자열과 무관하게 body-parser 클라이언트 오류로 보고 5xx와 expose 없는 오류만 500과 error 로그로 남김 — 압축 해제 실패 오류는 type 없이 status 400·expose만 붙음
+- Nest 12 ExpressAdapter.mapException은 body-parser 오류 중 잘못된 JSON(SyntaxError)만 BadRequestException으로 바꾸고 본문 크기 초과·미지원 charset·인코딩 오류는 http-errors 오류 그대로 전역 필터에 넘김 — 필터가 따로 변환하지 않으면 500이 됨
