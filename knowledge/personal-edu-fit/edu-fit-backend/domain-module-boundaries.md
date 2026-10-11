@@ -1,5 +1,5 @@
 ---
-description: 도메인 모듈 경계·External 의존·DTO·interface 재사용 범위를 정할 때
+description: 도메인 모듈 경계·External 의존·DTO·interface 재사용·응답 코드 위치를 정할 때
 ---
 
 # 도메인 모듈 경계
@@ -23,3 +23,13 @@ description: 도메인 모듈 경계·External 의존·DTO·interface 재사용 
 - enum(유니언 타입 포함)만 재사용을 허용하며, 여러 도메인이 쓰는 값은 공용 타입 모듈에, 도메인 고유 값은 소유 도메인에 둠
 - 역할별 DTO 클래스명에는 역할 접두어를 붙임 — Swagger가 클래스명을 스키마 키로 써서 역할 간 동명 DTO가 덮어써짐
 - 선생 담당 학생 판정은 수업 설정·업무 External 모듈만 import하는 전용 모듈 하나가 제공하고, 회원·리포트·탐구 분석·성취도의 선생 서비스가 씀 — 판정 중복과 순환 의존을 함께 피함
+- 비밀번호 해시 함수(hashPassword·verifyPassword)는 특정 도메인이 아닌 공용 영역(common)에 둠 — auth·member·시드 CLI가 함께 쓰는 순수 함수라 도메인에 두면 다른 도메인이 External이 아닌 내부 파일을 import하게 됨
+- 파일 다운로드 링크 서명 생성·검증(createFileUrlSignature·isValidFileUrlSignature)은 provider가 아닌 순수 함수로 두어 FileService(검증)와 FileExternalService(발급)가 함께 씀 — provider로 두면 External 모듈이 External 서비스 외 provider를 provide해야 함
+- 공용 ResponseCode의 UNAUTHORIZED·FORBIDDEN·NOT_FOUND·INVALID_REQUEST는 도메인 응답 코드 파일에 다시 정의하지 않음 — 같은 code를 두 도메인이 정의하면 응답 message는 던진 쪽 항목을 따름
+- External 서비스가 던지는 응답 코드(TEACHER_NOT_FOUND·ASSIGNEE_NOT_FOUND·INQUIRY_AXIS_NOT_FOUND·FILE_NOT_FOUND·FILE_NOT_OWNED 등)는 그 External 서비스가 있는 도메인 응답 코드 파일(예 MemberResponseCode)에만 정의하고 소비 도메인 응답 코드 파일에 다시 정의하지 않음
+- 소비 도메인 컨트롤러는 External 서비스가 던지는 응답 코드를 Swagger 오류 응답(ApiErrorResponse)에 적을 때 그 External 서비스 도메인의 응답 코드 객체(예 FileResponseCode)를 import해 씀
+
+## 함정
+
+- defineResponseCodes를 거치지 않은 code를 실은 HttpException은 ApiExceptionFilter가 status별 공용 코드로 바꿔 응답하는 것이 정상 — 내부 문자열 노출을 막음
+- 도메인 Module을 AppModule에서 빼면 그 도메인 External 모듈만 import한 소비 모듈의 External 조회가 실패함 — External 모듈(SubjectExternalModule·ConsultingExternalModule·CourseExternalModule)은 엔티티를 등록하지 않고 AppModule에 있는 도메인 Module의 MikroOrmModule.forFeature에 의존함
