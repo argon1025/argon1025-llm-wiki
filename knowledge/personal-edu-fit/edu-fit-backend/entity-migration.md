@@ -39,6 +39,7 @@ description: 엔티티·테이블을 추가·변경하거나 소프트 삭제 �
 - lesson_note는 FK 인덱스 lesson_id만 두고 복합 인덱스와 author_id 인덱스는 두지 않음 — 목록·최신 기록 조회가 모두 lesson_id로 찾고 수업 1건의 기록 수가 적으며 작성자 기준 조회가 없음
 - 수업·수업 설정의 하드 삭제 경로를 만들면 같은 트랜잭션에서 수업 기록(lesson_note)을 먼저 지움 — lesson_note_lesson_id_foreign FK가 on delete 동작 없음(RESTRICT)이라 기록이 있는 수업의 하드 삭제를 DB가 거부함
 - achievement_row는 FREE 행이면 school_level·grade·semester를 모두 null로, SEMESTER 행이면 셋을 모두 채워 저장함 — (table_id, school_level, grade, semester) unique에서 MySQL이 NULL을 서로 다른 값으로 봐 셋이 다 있는 행끼리만 중복을 막음
+- 후속 탐구·역량의 표시 순서(sortOrder) 컬럼은 int로 둠 — 개수 상한이 edu-fit-frontend 판단이고 1MB 본문에 smallint 범위(65,535)를 넘는 항목이 들어갈 수 있음
 
 ## 절차
 
@@ -52,9 +53,11 @@ description: 엔티티·테이블을 추가·변경하거나 소프트 삭제 �
 - 미리보기에 npx mikro-orm migration:create --dump를 쓰지 않음 — --dump를 붙여도 마이그레이션 파일을 실제로 만듦
 - 생성 직후 응답에 시각을 싣는 엔티티는 onCreate에서 DateTime.utc().startOf('second')로 초 단위로 잘라야 응답 값과 이후 조회 값이 같음 — LuxonDateTimeType 컬럼은 MySQL datetime(초 단위)이고 MySQL이 밀리초를 반올림해 저장함
 - 수정 시각(onUpdate)과 수업 시작·종료 시각(toLessonTime)도 저장 전에 초 단위로 내림 — MySQL이 소수 초를 반올림해(09:00:00.600이 09:00:01) 응답 값과 이후 조회 값이 달라지고 같은 초 안의 시작·종료가 저장 후 같아질 수 있음
+- 탐구 이력(InquiryRecord) 등록은 DateTime.utc().startOf('second') 한 값을 createdAt·updatedAt에 함께 넣음 — 두 필드의 onCreate는 한 flush 안에서 차례로 호출돼 그 사이에 초 경계를 넘으면 등록 응답의 두 시각이 달라짐
 - 기간 조회의 from·to는 초로 내리지 않고 그대로 비교함 — LuxonDateTimeType 조건 값은 toSQL()의 밀리초까지 전달되고 MySQL이 datetime 컬럼과 소수 초 상수를 소수 초를 유지한 채 비교하므로 start_at = '09:00:00'은 >= '09:00:00.500'이 거짓임
 - 학생 요청 수정(StudentTaskService.updateTask)에서 첨부 분류를 전달하면 task 행 값이 같아도 updatedAt을 직접 갱신함 — 첨부 연결은 task_file 행이라 Task의 onUpdate가 돌지 않음
 - 원장·선생 산출물 저장(saveDeliverable)은 저장마다 산출물 updatedAt을 직접 갱신함 — 공유 파일·후속 탐구만 바뀌면 TaskDeliverable의 onUpdate가 돌지 않음
+- 탐구 이력 수정(updateRecord)은 후속 탐구(followUps)를 전달하면 updatedAt을 직접 대입해 갱신함 — 후속 탐구만 바뀌면 InquiryRecord의 onUpdate가 돌지 않음
 
 ## 결정
 
