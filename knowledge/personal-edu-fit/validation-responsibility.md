@@ -12,6 +12,8 @@ description: API 요청 검증을 백엔드와 프론트엔드 중 어디서 할
 
 - edu-fit-backend는 아래 표에서 edu-fit-backend로 적은 보안·데이터 성립·불가능한 전이만 검증함 — 이후 요구사항 변경에 백엔드가 유연하게 대응하기 위함
 - 아래 표에서 edu-fit-frontend로 적은 항목은 edu-fit-backend가 막지 않으므로 edu-fit-frontend가 저장 전에 판단함
+- 원장 대리 수정·산출물 저장에서 상태별 편집 제한(완료 건 대리 수정 차단)은 edu-fit-backend가 검증하지 않고 edu-fit-frontend가 판단함
+- 상태 변경·산출물 저장의 완료(COMPLETED) 시 산출물 제목(title) 필수와 산출물 저장의 키워드(keywords)·후속 탐구(followUps) 개수 상한·빈 값·중복은 edu-fit-backend가 검증하지 않고 edu-fit-frontend가 판단함
 
 | 검증 항목 | 판단하는 레포 |
 |---|---|
