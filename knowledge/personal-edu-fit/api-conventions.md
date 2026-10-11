@@ -18,3 +18,25 @@ description: 역할별 API를 나누거나 응답·페이지네이션·시각 �
 - 목록 조회는 페이지 번호·페이지 크기로 나누는 오프셋 페이지네이션이며 전체 건수를 함께 돌려줌
 - DB와 edu-fit-backend는 모든 시각을 UTC로 다루고, 현지 시각 표시 변환은 edu-fit-frontend가 함
 - edu-fit-backend 응답은 공통 envelope(success·responseCode·message·data)이며 실패 시 data는 null임
+- edu-fit-backend는 실패 응답을 HTTP 4xx/5xx 상태와 success=false로 함께 내려줌
+- edu-fit-frontend는 성공을 HTTP 상태가 아니라 응답 envelope(ApiResponse)의 success로 판정함
+- edu-fit-frontend는 GET 요청(apiGet)에서 값이 undefined인 쿼리 파라미터를 키째 빼고 보냄 — edu-fit-backend가 정의되지 않은 쿼리 키를 400으로 거부함
+- edu-fit-backend는 요청 회원의 역할이 @Roles로 지정한 역할과 다르면 403 FORBIDDEN으로 거부하고, 토큰이 없으면 역할 확인(RolesGuard) 전에 401 UNAUTHORIZED로 거부함
+- edu-fit-backend는 @Roles가 없는 비공개 API를 인증된 모든 역할에 허용함
+
+## 코드값
+
+원본: `Role` 전 3종
+
+| 코드 | 뜻 |
+|---|---|
+| `DIRECTOR` | 원장 |
+| `TEACHER` | 선생 |
+| `STUDENT` | 학생 |
+
+원본: `ResponseCode` — 일부
+
+| 코드 | HTTP 상태 | 기본 메시지 |
+|---|---|---|
+| `UNAUTHORIZED` | 401 | 인증이 필요합니다. |
+| `FORBIDDEN` | 403 | 접근 권한이 없습니다. |
