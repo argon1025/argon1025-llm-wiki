@@ -1,5 +1,5 @@
 ---
-description: 목록 조회에서 검색어 LIKE·서브쿼리 조건·이름 정렬을 구현할 때
+description: 목록 조회에서 검색어 LIKE·서브쿼리 조건·이름·학교급 정렬을 구현할 때
 ---
 
 # 목록 조회 구현
@@ -9,6 +9,7 @@ description: 목록 조회에서 검색어 LIKE·서브쿼리 조건·이름 정
 - 원장 학생·원장 선생 서비스가 함께 쓰는 LIKE 검색어 이스케이프 함수(escapeLike)는 member 도메인 루트에 둠 — 역할별 서비스끼리 import하지 않음
 - MikroORM 7에서 em.find 조건에 서브쿼리를 넣을 때는 em.createQueryBuilder(Entity).select(...).where(...).getNativeQuery().toRaw() 결과를 $in·$nin 값으로 씀
 - course 도메인의 이름 정렬(compareName)에 'ko' 로캘을 쓰지 않음 — 'ko'는 한글을 라틴 문자보다 앞에 두어 MySQL utf8mb4_0900_ai_ci 이름순과 달라짐
+- 탐구 이력 목록의 학교급 정렬(compareInquiryRecords)은 SQL이 아닌 애플리케이션에서 함 — 학교급 문자열 사전순(ELEMENTARY < HIGH < MIDDLE)이 학교급 순서와 다름
 
 ## 결정
 
