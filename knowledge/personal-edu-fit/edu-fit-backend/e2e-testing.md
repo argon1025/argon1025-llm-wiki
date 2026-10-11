@@ -20,6 +20,9 @@ description: e2e 테스트를 작성하거나 테스트 DB·시드·파일 저�
 - 첨부(downloadUrl)가 담긴 응답을 다른 요청의 응답과 toEqual·toMatchObject로 비교할 때는 기대값을 withDownloadUrlPattern(...)으로 감쌈 — 서명 만료가 응답 시각(초)으로 정해져 두 요청이 다른 초에 처리되면 같은 첨부도 downloadUrl이 달라짐
 - e2e 실패가 timeout이면 같은 spec을 단독 실행해 통과하는지로 공유 MySQL 부하와 테스트 결함을 구분함 — hookTimeout 30초는 beforeAll·beforeEach·afterAll에만 적용되고 testTimeout은 vitest 기본 5초 그대로임
 - 초 경계 의존 여부는 setupFiles에서 luxon Settings.now를 1000배 가속(실제 1ms = 가상 1초)한 vitest 설정으로 spec을 돌려 확인함
+- FK 간격 잠금 교착을 재현하는 e2e는 자식 행이 없는 부모(파일 연결 없는 후속 탐구, 역량 없는 전공)를 가진 서로 다른 대상 여러 건을 동시에 교체함 — 자식 행이 있으면 간격 잠금이 다른 부모의 자식 행 앞에서 끝나 재현되지 않음
+- e2e의 테스트 블록 밖 헬퍼(AnalysisFixture 등)에서는 expect를 쓰지 않고 준비 요청 실패 시 Error를 던짐 — 헬퍼의 expect는 oxlint vitest(no-standalone-expect) 오류임
+- e2e에서 여러 입력의 검증은 [입력, status, responseCode] 배열로 모아 한 번에 비교하며 expect(value, message) 두 인자 형식은 쓰지 않음 — oxlint vitest(valid-expect) 오류임
 
 ## 함정
 

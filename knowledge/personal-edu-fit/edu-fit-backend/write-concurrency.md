@@ -10,6 +10,11 @@ description: 동시 요청의 행 잠금·유니크 위반·순서 값 충돌을
 
 - 비관적 잠금 조회는 em.transactional의 첫 조회로 둠 — 트랜잭션 안에서 잠금 없이 먼저 읽으면 MySQL REPEATABLE READ 스냅샷이 고정돼 잠금 대기 중 커밋된 변경을 못 봄
 - 잠글 행의 상위 ID(댓글의 업무 ID, 성취도 행의 표 ID)가 필요하면 트랜잭션 밖에서 먼저 읽음 — 잠금 조회를 트랜잭션의 첫 조회로 두기 위함
+- FK로 참조되는 부모 행을 지우고 같은 트랜잭션에서 그 자식 테이블에 행을 넣는 교체 쓰기는 em.transactional(cb, { isolationLevel: IsolationLevel.READ_COMMITTED })로 실행함 — REPEATABLE READ에서는 on delete cascade 여부와 무관하게 부모 삭제의 FK 확인이 자식 인덱스 끝(supremum)을 공유 잠금으로 쥐어 서로 다른 부모를 교체하는 두 트랜잭션이 insert intention 잠금을 기다리며 교착(DeadlockException, 500)함
+- READ COMMITTED로 실행하는 교체 쓰기도 콜백 첫 쿼리에서 잠금 기준 행을 기본키로 PESSIMISTIC_WRITE 잠금
+- 업무 요청 첨부·업무 댓글 첨부·성취도 표 정의·행 값·선생 담당 과목 교체와 부모만 지우는 삭제(댓글 삭제, 성취도 행·표 삭제)는 REPEATABLE READ로 둠 — 자식 없는 leaf 행만 지우거나 삭제 뒤 자식 테이블에 insert하지 않아 서로 다른 부모 동시 교체에서 500이 재현되지 않았음
+- REPEATABLE READ 경로에 삭제 뒤 자식 insert를 더하면 READ COMMITTED 교체 규칙을 따름
+- 공유 잠금 조회는 { id: { $in }, studentId } 조건이나 fields 축소 대신 전체 컬럼 PK 조회(em.findOne(Entity, id, { lockMode }))로 함 — MySQL 8에서 SELECT ... FOR SHARE가 커버링 보조 인덱스로 실행되면 PK 행은 잠기지 않아 PK 쓰기 잠금과 직렬화되지 않음
 
 ### consulting
 
@@ -38,6 +43,21 @@ description: 동시 요청의 행 잠금·유니크 위반·순서 값 충돌을
 - 성취도 행 수정·삭제(findRowTableId)는 트랜잭션 밖에서 행을 읽어 표 ID를 얻은 뒤 표 행을 잠그고, 잠금 뒤 행·값은 refresh: true로 다시 읽음
 - 선생 성취도 표·행 경로(TeacherAchievementService.lockTable)는 범위 밖 요청도 범위 판정(TeacherScopeExternalService.isInScope) 동안 표 행 쓰기 잠금을 잡음 — 표 행을 잠근 뒤 잠근 표의 studentId로 범위를 판정함
 
+### analysis
+
+- 탐구 분석은 하위 행을 교체·추가하거나 cascade로 지우는 쓰기(이력 수정·연결 생성·전공 적합성 교체·이력·연결 삭제)만 em.transactional의 IsolationLevel.READ_COMMITTED로 실행함
+- 자식 행 생성만 하는 이력 등록·가져오기는 기본 REPEATABLE READ로 둠
+- 탐구 분석에서 격리 수준만 바꾸고 부모 행 잠금을 빼면 같은 부모의 동시 교체가 자식 행을 중복으로 만듦
+- 탐구 분석 쓰기의 잠금 순서는 학생 프로필 행(lockStudent: 이력·연결 삭제, 전공 적합성 교체) → 탐구 이력 행(이력 수정은 쓰기 잠금, 연결 생성은 두 행 ID 오름차순 공유 잠금) → 하위 행이며 새 쓰기 경로도 이 순서를 지킴 — 이력·연결 행을 잡은 뒤 학생 행을 잡으면 교착됨
+- 탐구 이력·연결 삭제(DirectorInquiryRecordService.deleteRecord)는 대상을 트랜잭션 밖에서 잠금 없이 읽어 학생(선생은 범위 판정도)을 얻고 READ COMMITTED 트랜잭션의 첫 조회로 lockStudent를 잡음
+- 탐구 이력·연결 삭제는 em.nativeDelete 영향 행 수가 0이면 404로 응답함
+- 탐구 이력·연결 삭제에서 학생 행 잠금을 빼면 연결된 이력 A·B 동시 삭제나 연결·출발 이력 동시 삭제가 cascade로 지워지는 같은 연결 행을 반대 순서로 잠가 교착 500이 남
+- 탐구 연결 생성(DirectorInquiryLinkService.createLink)은 READ COMMITTED 트랜잭션에서 출발·도착 이력을 ID 오름차순으로 하나씩 em.findOne(InquiryRecord, id, { lockMode: PESSIMISTIC_READ, refresh: true }) PK 조회로 공유 잠금하고 학생 일치는 애플리케이션에서 비교함
+- 탐구 연결 생성에서 공유 잠금을 빼면 이력 삭제와 동시에 온 연결 생성이 FK 위반 500이 됨
+- 탐구 연결 생성에서 student_id 조건 조회는 (student_id, id) 커버링 인덱스 항목만 잠가 이력 삭제와 교착함
+- 전공 적합성 전체 교체(DirectorMajorFitService.saveMajorFits)는 READ COMMITTED 트랜잭션의 첫 조회로 lockStudent를 잡아 같은 학생의 동시 교체를 직렬화함 — analysis 도메인에 잠글 부모 행이 없음
+- 전공 적합성 교체를 잠금 없는 count(assertStudent)로 바꾸면 기존 행이 없는 학생의 동시 첫 교체가 전공·역량을 2배로 만듦
+
 ### report
 
 - 리포트 수정·삭제(DirectorReportService.lockReport)는 em.transactional 첫 조회로 리포트 행을 LockMode.PESSIMISTIC_WRITE로 읽어 같은 리포트의 뒤 요청이 404 REPORT_NOT_FOUND를 받게 함 — 잠금 없이 조회하면 동시 삭제 두 건이 모두 200이 됨
@@ -45,11 +65,15 @@ description: 동시 요청의 행 잠금·유니크 위반·순서 값 충돌을
 ### member
 
 - 선생 담당 학생 학년 수정(TeacherStudentService.updateStudentGrade)은 행 잠금을 두지 않음 — student_profile 한 행의 값만 교체함
+- 학생 프로필 행 쓰기 잠금(MemberExternalService.lockStudent, SELECT ... FOR UPDATE)은 트랜잭션의 첫 조회로만 호출함
+- lockStudent 잠금 동안 같은 학생의 회원 정보 수정이 대기함
 - 원장 학생 등록·수정(DirectorStudentService.flush)의 LOGIN_ID_DUPLICATED는 사전 count 없이 flush 중 UniqueConstraintViolationException을 409로 바꾸는 한 경로로 판정함 — 동시 등록까지 처리함
 - 원장 선생 서비스(DirectorTeacherService.flush)는 유니크 위반의 sqlMessage에 user_login_id_unique가 있을 때만 409 LOGIN_ID_DUPLICATED로 바꾸고 나머지는 그대로 던짐 — teacher_subject 복합 PK 충돌을 로그인 ID 중복으로 볼 수 없음
 
 ## 함정
 
+- REPEATABLE READ에서 서로 다른 업무의 동시 산출물 저장(saveDeliverable) 교착은 저장 전 업무에 파일 없는 후속 탐구(task_follow_up)가 있을 때만 드러남 — 재현 e2e는 파일 없는 후속 탐구로 먼저 저장한 업무 여러 개를 파일 있는 후속 탐구로 동시에 다시 저장함
+- READ COMMITTED 트랜잭션(산출물 저장·탐구 분석 교체 등)을 쓰려면 MySQL binlog_format이 ROW(MySQL 8.0 기본값) 또는 MIXED여야 함 — STATEMENT이면 InnoDB가 READ COMMITTED 트랜잭션의 쓰기를 binlog에 기록할 수 없다는 오류로 거부함
 - 트랜잭션 밖에서 읽은 엔티티를 em.transactional 안에서 refresh·비관적 lockMode 없이 findOne하면 DB를 조회하지 않음 — em.transactional의 clear: false fork가 identity map을 복사함
 - 잠금 없이 조회한 행을 em.remove 후 flush로 지우면 다른 요청이 먼저 지운 행이어도 성공함 — MikroORM flush는 DELETE 영향 행 수를 확인하지 않음
 - 업무 숨기기(StudentTaskService.hideTask)의 em.upsert(TaskHidden, ...)를 em.create 후 flush로 바꾸면 이미 숨긴 업무에서 UniqueConstraintViolationException이 남 — upsert는 동시 요청에도 PK 중복 오류가 나지 않음
