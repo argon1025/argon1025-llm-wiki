@@ -22,8 +22,10 @@ description: 개인판 플러그인 공통 본문·버전을 바꾸거나 사내
 - 개인판 pr-workflow·plan-workflow·better-communication에서 사내판으로 rsync되는 공통 본문(사내 고유 파일 밖의 파일)에는 플러그인 이름·사내 경로(.devcenter/…)·Bitbucket 도구명(bitbucket_*)·개인판 경로 상수(.ai-docs/…)를 넣지 않음 — 사내판이 공통 본문을 그대로 덮어써 환경 값이 섞이면 한쪽이 틀어짐
 - 사내판 마켓플레이스의 플러그인 이름(devcenter-pr·devcenter-flow·devcenter-comms·agent-wiki)은 바꾸지 않고 유지함 — 사내 25개 레포 develop의 공유 .claude/settings.json이 이 이름을 enabledPlugins 키로 켜므로 바꾸면 25개 레포 설정 재배포와 marketplace renames 처리가 필요함
 - 개인판 pr-workflow·plan-workflow·better-communication과 사내판 devcenter-pr·devcenter-flow·devcenter-comms는 대응 플러그인끼리 같은 버전을 씀
+- 개인판 plan-workflow를 사내판 devcenter-flow로 미러링하면 사내판은 devcenter-flow의 plugin.json·마켓플레이스 플러그인 항목·마켓플레이스 최상위 세 곳의 version을 올림
 - 개인판 버전이 1.x 다음 pr-workflow 3.1.0·plan-workflow 3.2.0·better-communication 4.1.0으로 이어지는 것은 의도된 동작임 — 공통 버전을 사내 이력(devcenter-pr 3.0.1, devcenter-flow 3.0.1·사내 marketplace 항목 3.1.0, devcenter-comms 4.0.0)보다 높게 잡음
 
 ## 함정
 
 - 개인판과 사내판의 wiki.baseRoot가 같은 경로(개인판 기본값 `~/.agent-wiki`)이면 나중에 끝난 쪽 위키를 다른 쪽 주입이 읽음 — 두 세션 시작 훅의 위키 동기화(sync_wiki.py)가 그 위키 사본을 각자의 원격(GitHub main·Bitbucket master)으로 remote set-url·강제 checkout해 경합함
+- 개인판에서 사내판으로 rsync -a -n -i dry-run을 하면 내용이 같고 수정 시각만 다른 파일도 `>f..t....`로 출력됨 — 내용이 바뀌는 파일만 보려면 -c를 더해 `>fc` 줄만 봄
