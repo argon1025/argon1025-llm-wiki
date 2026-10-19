@@ -26,3 +26,4 @@ description: HTTP API 컨트롤러·응답 DTO·Swagger를 구현하거나 앱 �
 - @Public() 핸들러에서 @CurrentUser()를 쓰면 401 UNAUTHORIZED로 응답함 — @Public() API에는 request.user가 없음
 - 전역 예외 필터(ApiExceptionFilter)는 status 400~499이고 expose가 true인 Error를 type 문자열과 무관하게 body-parser 클라이언트 오류로 보고 5xx와 expose 없는 오류만 500과 error 로그로 남김 — 압축 해제 실패 오류는 type 없이 status 400·expose만 붙음
 - Nest 12 ExpressAdapter.mapException은 body-parser 오류 중 잘못된 JSON(SyntaxError)만 BadRequestException으로 바꾸고 본문 크기 초과·미지원 charset·인코딩 오류는 http-errors 오류 그대로 전역 필터에 넘김 — 필터가 따로 변환하지 않으면 500이 됨
+- 선생 담당 학생 서비스(TeacherStudentService)의 toItem은 반환 타입 없이 spread로 쓰여 TeacherGetStudentsItemResult·TeacherGetStudentResult에 새 응답 필드를 빠뜨려도 tsc가 오류를 내지 않음 — 필드를 추가할 때 두 인터페이스를 직접 함께 고쳐야 함

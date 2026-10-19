@@ -20,8 +20,9 @@ description: 동시 요청의 행 잠금·유니크 위반·순서 값 충돌을
 
 - consulting에서 업무의 하위 연결 행(task_file 등)을 조회한 뒤 지우고 다시 넣는 쓰기(StudentTaskService.updateTask)는 em.transactional 안에서 업무 행을 LockMode.PESSIMISTIC_WRITE로 먼저 읽음 — 동시 요청의 첨부 중복 연결을 막음
 - 철회(StudentTaskService.deleteTask)·숨김(hideTask)처럼 단일 행만 갱신하거나 멱등인 쓰기는 업무 행을 잠그지 않음
-- 업무 배정(DirectorTaskService.assignTask)·배정 취소·신청 내용 대리 수정·마감일 변경·산출물 저장·상태 변경은 em.transactional 안에서 업무 행을 PESSIMISTIC_WRITE로 먼저 읽음 — 잠금이 없으면 동시 배정의 ASSIGNED 히스토리 중복·task_assignment PK 중복 500, 동시 첫 산출물 저장의 task_deliverable PK 중복 500, 동시 상태 변경 히스토리 중복이 생김
-- 선생의 업무 쓰기(마감일 변경·산출물 저장·상태 변경, findTaskInScope)는 업무 행을 잠근 뒤 배정 이력(없으면 404 TASK_NOT_FOUND)·현재 담당자(아니면 403 FORBIDDEN) 순으로 확인함
+- 업무 배정(DirectorTaskService.assignTask)·배정 취소·신청 내용 대리 수정·마감일 변경·산출물 저장·상태 변경은 em.transactional 안에서 업무 행을 PESSIMISTIC_WRITE로 먼저 읽음 — 잠금이 없으면 동시 배정의 ASSIGNED 히스토리 중복, 동시 첫 산출물 저장의 task_deliverable PK 중복 500, 동시 상태 변경 히스토리 중복이 생김
+- 선생 업무 쓰기(마감일·상태 변경, 산출물 저장, 댓글 작성·수정·삭제)의 담당 판정(findTaskInScope·lockOwnComment)은 트랜잭션 첫 조회로 업무 행을 PESSIMISTIC_WRITE로 잠근 뒤 task.assigneeId와 비교함 — 같은 업무의 재배정·배정 취소와 직렬화됨
+- 선생 업무 쓰기와 같은 업무의 재배정·배정 취소를 동시에 보내는 e2e는 200·201 또는 404를 기대함 — 원장 쪽이 먼저 커밋되면 잠금 뒤 담당자 판정이 404가 되는 것이 정상임
 - 댓글 수정·삭제(DirectorTaskCommentService.lockOwnComment)는 트랜잭션 밖에서 findOne(TaskComment, commentId)로 업무 ID를 얻고, 트랜잭션 첫 조회로 업무 행을 PESSIMISTIC_WRITE로 잠근 뒤 댓글을 refresh: true로 다시 읽음 — refresh 없이 다시 읽으면 같은 댓글의 동시 첨부 교체·수정과 삭제가 500이 됨
 - 원장·학생 댓글 작성은 업무 행을 잠그지 않음 — 새 댓글 행만 넣음
 - 선생 댓글 작성(TeacherTaskCommentService)은 업무 행을 잠금 — 현재 담당자 판정을 재배정과 직렬화함

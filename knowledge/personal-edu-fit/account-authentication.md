@@ -13,6 +13,7 @@ description: 로그인·계정 발급·비밀번호 정책·회원 비활성화�
 - 로그인은 ID/비밀번호이며 자체 회원 가입은 없고 학생·선생 계정은 원장이 발급함
 - 인증은 JWT Bearer access 토큰 하나(수명 12시간)이며 refresh 토큰은 아직 없음
 - 인증이 필요한 API는 Authorization: Bearer access 토큰(HS256, 클레임 sub=회원 ID 문자열·role·exp)으로 호출함
+- edu-fit-frontend는 토큰을 붙인 요청이 응답 코드 UNAUTHORIZED로 실패하면 세션 만료로 처리함 — 로그인 실패는 401 INVALID_CREDENTIALS로 구분됨
 - 인증이 필요한 API는 토큰 없음·형식 오류·서명 불일치·만료·없는 회원·비활성 회원이면 모두 401 UNAUTHORIZED로 응답함
 - edu-fit-backend는 매 요청 회원의 활성 여부를 DB에서 다시 조회해 비활성화된 회원의 기존 토큰도 401 UNAUTHORIZED로 즉시 거부함
 - 요청의 역할은 토큰의 role 클레임이 아니라 DB의 현재 역할을 씀 — 발급 뒤 바뀐 역할이 바로 반영됨

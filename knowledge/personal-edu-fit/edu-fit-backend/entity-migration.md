@@ -32,7 +32,6 @@ description: 엔티티·테이블을 추가·변경하거나 소프트 삭제 �
 - file의 uploader_id·storage_key에는 인덱스를 두지 않음 — 조회가 id IN (...)뿐임
 - task_hidden은 별도 id 없이 (user_id, task_id) 복합 PK이며 userId를 task보다 먼저 선언해 PK 선두로 둠 — 목록 숨김 필터가 user_id로 찾음
 - task 인덱스는 (student_id, due_date) 하나만 두며 담당자·상태 기준 조회를 추가하는 작업이 그 조회에 맞는 인덱스를 정함 — 기존 인덱스는 학생 본인 목록 정렬과 캘린더 범위 조회만 받침
-- 재배정으로 같은 담당자가 다시 배정돼도 배정 이력의 배정 시각(task_assignment.assigned_at)은 갱신하지 않음 — 그 담당자가 그 업무에 처음 배정된 시각임
 - 히스토리 문구(task_history.message)는 TaskHistoryMessage로만 만들고, 이름을 둘 넘게 싣거나 user.name 컬럼을 넓히면 varchar(255) 상한을 다시 확인함 — 이름 두 개(각 최대 100자)를 담는 재배정 문구가 최대 207자임
 - 댓글 첨부를 요청 순서로 응답해야 하면 연결 행(task_comment_file)에 자동 증가 id를 추가하고 id 순으로 정렬함 — 연결 행이 (comment_id, file_id) 복합 PK뿐이라 순서를 저장할 컬럼이 없음
 - lesson 테이블은 FK 인덱스 course_id와 start_at 인덱스만 둠 — 원장 기간 조회는 start_at 범위로, 선생·학생 조회는 course.teacher_id·student_id 인덱스로 찾은 course_id로 하여 학원 규모에서 복합 인덱스 없이 충분함
@@ -58,6 +57,7 @@ description: 엔티티·테이블을 추가·변경하거나 소프트 삭제 �
 - 학생 요청 수정(StudentTaskService.updateTask)에서 첨부 분류를 전달하면 task 행 값이 같아도 updatedAt을 직접 갱신함 — 첨부 연결은 task_file 행이라 Task의 onUpdate가 돌지 않음
 - 원장·선생 산출물 저장(saveDeliverable)은 저장마다 산출물 updatedAt을 직접 갱신함 — 공유 파일·후속 탐구만 바뀌면 TaskDeliverable의 onUpdate가 돌지 않음
 - 탐구 이력 수정(updateRecord)은 후속 탐구(followUps)를 전달하면 updatedAt을 직접 대입해 갱신함 — 후속 탐구만 바뀌면 InquiryRecord의 onUpdate가 돌지 않음
+- Migration20261010185650을 task_assignment가 있던 예전 내용으로 적용한 DB는 다시 만듦 — 테이블을 지우는 마이그레이션이 없어 task_assignment가 남고 migration:create에 그 drop문이 섞임
 
 ## 결정
 
