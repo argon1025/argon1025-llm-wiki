@@ -3,7 +3,7 @@
     "personal-edu-fit/edu-fit-frontend": [
       {
         "to": "personal-edu-fit/edu-fit-backend",
-        "desc": "백엔드 REST API를 src/lib/api/client.ts의 apiGet·apiPost로 브라우저에서 직접 호출(주소는 NEXT_PUBLIC_API_BASE_URL)"
+        "desc": "백엔드 REST API를 src/shared/api/client.ts의 apiGet·apiPost로 브라우저에서 직접 호출(주소는 NEXT_PUBLIC_API_BASE_URL)"
       }
     ],
     "personal-stock-trading/pigeon-trade-dashboard": [
