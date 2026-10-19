@@ -23,6 +23,9 @@ description: e2e 테스트를 작성하거나 테스트 DB·시드·파일 저�
 - FK 간격 잠금 교착을 재현하는 e2e는 자식 행이 없는 부모(파일 연결 없는 후속 탐구, 역량 없는 전공)를 가진 서로 다른 대상 여러 건을 동시에 교체함 — 자식 행이 있으면 간격 잠금이 다른 부모의 자식 행 앞에서 끝나 재현되지 않음
 - e2e의 테스트 블록 밖 헬퍼(AnalysisFixture 등)에서는 expect를 쓰지 않고 준비 요청 실패 시 Error를 던짐 — 헬퍼의 expect는 oxlint vitest(no-standalone-expect) 오류임
 - e2e에서 여러 입력의 검증은 [입력, status, responseCode] 배열로 모아 한 번에 비교하며 expect(value, message) 두 인자 형식은 쓰지 않음 — oxlint vitest(valid-expect) 오류임
+- 전체 e2e(npm run test:e2e)는 백그라운드로 실행해 종료 알림을 기다림 — fileParallelism false로 spec을 순차 실행해 1027건 기준 약 17분이 걸려 600초 foreground 한도를 넘김
+- 비TTY에서 실행한 전체 e2e는 출력이 없어도 중단으로 판단하지 않음 — 비TTY에서는 완료 전까지 진행 출력이 없는 것이 정상임
+- 마이그레이션을 바꾸면 e2e와 별도로 개발 DB에서 migration:up·migration:check·migration:down --to 0으로 검증함 — E2eApp은 orm.schema.refresh()로 엔티티에서 스키마를 만들어 마이그레이션을 실행하지 않음
 
 ## 함정
 
@@ -33,6 +36,7 @@ description: e2e 테스트를 작성하거나 테스트 DB·시드·파일 저�
 - 생성 응답의 updatedAt과 createdAt 동등 비교는 한 flush 안에서 초 경계를 넘으면 어긋나는 이론상 간헐 실패 여지가 있음 — 엔티티(TaskComment·Task·LessonNote·AchievementTable·Report)가 두 필드를 따로 onCreate로 채움
 - 생성 응답 updatedAt·createdAt 비교의 간헐 실패는 테스트 코드로 결정적으로 막을 수 없음 — 엔티티가 생성 시각 하나를 두 필드에 함께 넣도록 운영 코드를 바꿔야 막힘
 - 시계 가속 vitest 설정에서 만료된 토큰의 401 UNAUTHORIZED 테스트(GET /api/me) 1건이 실패하는 것은 가속의 부작용임(정상) — jsonwebtoken 만료 검증은 가속된 luxon 시각이 아닌 실제 Date.now()를 씀
+- 테스트 DB에 task_assignment 테이블이 남아 모든 e2e의 E2eApp.create가 task_assignment_task_id_foreign FK 오류로 실패하면 테스트 DB를 drop 후 create함 — TaskAssignment가 있던 코드의 schema.refresh()가 남긴 테이블임
 
 ## 결정
 
