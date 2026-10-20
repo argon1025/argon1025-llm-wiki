@@ -6,7 +6,7 @@ description: 원장이 학생·선생 계정·담당 과목을 등록·조회·�
 
 ## 적용 대상
 
-- edu-fit-backend의 원장 학생 API(/api/director/students), 원장 선생 API(/api/director/teachers), 학생 본인 프로필 API(/api/student/profile)
+- edu-fit-backend의 원장 학생 API(/api/director/students), 원장 선생 API(/api/director/teachers), 학생 본인 프로필 API(/api/student/profile), 이를 호출해 목록 빈 상태를 판정하는 edu-fit-frontend
 
 ## 규칙
 
@@ -78,6 +78,11 @@ description: 원장이 학생·선생 계정·담당 과목을 등록·조회·�
 | 숫자가 아닌 경로 ID | 400 |
 | 선생·학생 토큰 | 403 FORBIDDEN |
 
+### 회원 목록 빈 상태
+
+- 원장 학생·선생 목록에서 활성만 조회(includeInactive 생략)한 결과가 0건이면 응답만으로 등록 없음과 활성 없음을 가를 수 없음
+- edu-fit-frontend는 검색어 없는 활성만 조회가 0건일 때만 includeInactive=true&limit=1을 한 번 더 조회해 등록 없음과 활성 없음을 가름
+
 ## 코드값
 
 원본: `MemberResponseCode` 전 4종
@@ -88,3 +93,7 @@ description: 원장이 학생·선생 계정·담당 과목을 등록·조회·�
 | `LOGIN_ID_DUPLICATED` | 409 '이미 사용 중인 로그인 ID입니다.' |
 | `TEACHER_NOT_FOUND` | 404 '존재하지 않는 선생입니다.' |
 | `ASSIGNEE_NOT_FOUND` | 404 '배정할 수 없는 담당자입니다.' |
+
+## 함정
+
+- edu-fit-backend는 학생·선생 등록·수정의 이름(name)을 코드 포인트 1~100자로만 검증해 공백만 있는 이름도 저장함
