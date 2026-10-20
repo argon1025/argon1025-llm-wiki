@@ -15,6 +15,7 @@ description: 앱 셸 사이드바 메뉴나 역할별 화면 페이지를 추가
 - 사이드바 메뉴(MENUS) 라벨이 그룹명을 반복하는 것('탐구 컨설팅' 그룹의 '탐구 컨설팅 관리')은 의도된 동작임 — 라벨은 와이어프레임의 그룹명 반복 회피 지침이 아니라 이슈 #10 표를 따름
 - 역할별 화면 페이지는 PageHeader와 본문을 감싸는 요소 없이 형제로 반환함 — 앱 셸 panel의 flex gap이 헤더와 본문 사이 간격을 줌
 - 사이드바 접힘 상태를 새로고침 뒤에도 유지하려면 SidebarProvider defaultOpen을 document.cookie의 sidebar_state 값으로 정함 — 서버 cookies()로 읽으면 앱 레이아웃이 동적 렌더링으로 바뀜
+- useSearchParams를 쓰는 클라이언트 화면 컴포넌트는 page.tsx에서 fallback 없는 Suspense로 감쌈 — 정적 프리렌더 페이지에 경계가 없으면 next build가 Missing Suspense boundary with useSearchParams로 실패함
 
 ## 함정
 

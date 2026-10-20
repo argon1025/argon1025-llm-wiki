@@ -18,6 +18,7 @@ description: 학생 학교급·학년·학기를 표시·수정하거나 진급�
 - edu-fit-backend는 학기를 저장·산출하지 않고, edu-fit-frontend가 현재 날짜로 학기를 계산함
 - 탐구 요청·탐구 이력 등 다른 기능의 학교급·학년·학기는 edu-fit-backend가 요청 값으로 받고 프로필에서 끌어오지 않으며, edu-fit-frontend가 프로필 값으로 미리 채움
 - 선생은 담당 학생의 학교급·학년만 수정할 수 있고 나머지 학생 프로필 수정은 원장 전용임
+- edu-fit-frontend는 원장 학생 수정(PATCH /api/director/students/:studentId)에서 학교급·학년(schoolLevel·grade)을 바꾸지 않았으면 두 필드를 보내지 않음 — 하나라도 보내면 edu-fit-backend가 지정 학년도(gradeBaseYear)를 현재 학년도로 다시 잡음
 
 ## 코드값
 
@@ -32,3 +33,4 @@ description: 학생 학교급·학년·학기를 표시·수정하거나 진급�
 ## 함정
 
 - 졸업한 학생의 표시 학년이 학교급 최고 학년을 넘어 학년도마다 계속 늘어나는 것은 정상 — 표시 학년을 상한으로 자르지 않고 졸업 여부는 isGraduated로 따로 줌
+- 3월 1일 00:00~09:00 KST에는 edu-fit-frontend가 산출한 학기는 새 학년도 1학기인데 edu-fit-backend의 표시 학년은 전년 학년도 값임(의도된 동작) — 학년도는 UTC 날짜, 학기(semesterOf)는 KST 날짜로 산출함
