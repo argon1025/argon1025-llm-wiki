@@ -1,5 +1,5 @@
 ---
-description: shadcn 컴포넌트를 설치·수정하거나 치수·radius·hover·선택 상태를 맞출 때
+description: shadcn 컴포넌트를 설치·수정하거나 치수·radius·hover·선택 상태·중첩 다이얼로그를 다룰 때
 ---
 
 # UI 컴포넌트 규칙
@@ -9,6 +9,8 @@ description: shadcn 컴포넌트를 설치·수정하거나 치수·radius·hove
 - 화면 커스텀은 CSS 변수 토큰(:root·.dark) → @theme inline 매핑·@utility → 사용처 className·조합 컴포넌트 → 생성물 직접 수정 순서로 하며, 앞 단계로 해결되면 다음 단계로 넘어가지 않음
 - shadcn 스타일을 전환하면 components.json의 style 변경과 기존 생성물 재설치(shadcn add <name> --overwrite)만으로 끝나며 globals.css는 바뀌지 않음 — 스타일 레지스트리에 cssVars가 없음
 - shadcn 생성물은 모든 화면에 같은 값을 쓰는 컨트롤 크기·radius·안쪽 여백·hover·선택 상태 규칙 범위만 직접 수정하고, 재설치(--overwrite)·업스트림 갱신 뒤 같은 규칙을 다시 적용함 — 재설치가 수정분을 덮어씀
+- 다이얼로그 위에 겹쳐 여는 다이얼로그(Dialog·AlertDialog)의 콘텐츠에는 shadow-2xl을 둠 — Base UI가 중첩 다이얼로그의 두 번째 backdrop을 그리지 않아 겹침이 구분되지 않음
+- 폼 안에 둔 중첩 다이얼로그의 폼 제출 핸들러는 stopPropagation을 호출함 — 다이얼로그가 포털로 그려져도 React 합성 제출 이벤트가 React 트리를 따라 바깥 폼 onSubmit까지 번짐
 
 ### 컨트롤 치수
 
