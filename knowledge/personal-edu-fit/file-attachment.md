@@ -46,4 +46,5 @@ description: 파일을 업로드하거나 도메인에 첨부·해제·다운로
 - 어느 도메인에도 연결되지 않은 업로드 파일은 정리되지 않고 남는 것이 정상 — 고아 파일 정리 기능은 두지 않음
 - 업로드에서 file 외 필드명의 파일이나 file 파일 2개 이상은 400 INVALID_REQUEST로 응답하며 FILE_REQUIRED가 아님
 - 도메인 응답 첨부의 downloadUrl은 API 서버 origin 없는 상대 경로(/api/files/:fileId/download?expires=..&signature=..)임 — edu-fit-frontend가 API base URL을 앞에 붙여 요청해야 함
+- edu-fit-frontend가 downloadUrl을 절대 URL로 만들어 페이지 이동으로 내려받으면 현재 페이지가 그대로 남는 것이 정상 — 파일 다운로드(GET /api/files/:fileId/download) 응답이 Content-Disposition: attachment임
 - 업무 요청 첨부(noticeFileIds·workFileIds)·댓글 첨부(fileIds)를 1MB 본문의 최대 개수로 교체하면 7.0~8.7초 걸림(의도된 동작) — 업로드 개수·첨부 배열 길이에 상한을 두지 않고, 지연이 운영 문제가 되기 전에는 정하지 않음
