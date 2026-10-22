@@ -25,6 +25,8 @@ description: 수업 과목·탐구 축 마스터를 추가·수정·삭제·정�
 - 원장 탐구 축 관리 API(/api/director/inquiry-axes)는 목록(GET, 페이지네이션 없는 배열)·추가(POST, 201)·순서 변경(PUT /order)·이름 수정(PATCH /:axisId)·소프트 삭제(DELETE /:axisId)를 제공함
 - 원장 탐구 축 관리 API는 DIRECTOR 전용이라 선생·학생이 호출하면 403 FORBIDDEN임
 - 탐구 축 이름(name)은 코드 포인트 기준 1~50자이고 공백만으로 된 이름은 허용되지 않으며 위반이면 400 INVALID_REQUEST임
+- edu-fit-frontend는 탐구 축 이름을 앞뒤 공백을 뺀 뒤 대소문자를 무시해 기존 활성 축 이름과 같으면 중복으로 막음(수정 중인 자기 축 제외) — edu-fit-backend는 이름 중복을 확인하지 않음
+- edu-fit-frontend는 탐구 축 추가·이름 수정 요청에 앞뒤 공백을 뺀 이름(name)을 보냄
 - 탐구 축 추가(POST)는 삭제되지 않은 축 중 가장 큰 sortOrder에 1을 더한 값(활성 축이 없으면 1)으로 마지막 순서에 붙이며 삭제된 축의 sortOrder는 계산에 쓰지 않음
 - 탐구 축 순서 변경(PUT /api/director/inquiry-axes/order)은 활성 탐구 축 ID 전체(axisIds)를 중복 없이 한 번씩 원하는 순서로 받음
 - 탐구 축 순서 변경에서 누락·중복·미존재(삭제된 축 포함) ID가 있으면 'axisIds: 활성 탐구 축 ID 전체를 중복 없이 한 번씩 전달해야 합니다.' 메시지의 400 INVALID_REQUEST임
@@ -33,11 +35,12 @@ description: 수업 과목·탐구 축 마스터를 추가·수정·삭제·정�
 - 없는 탐구 축과 이미 삭제된 탐구 축의 이름 수정·삭제는 모두 404 INQUIRY_AXIS_NOT_FOUND이고 숫자가 아닌 axisId는 400 INVALID_REQUEST임
 - edu-fit-backend는 탐구 축을 새로 지정하는 쓰기 요청의 축(axisId)이 없거나 삭제된 축이면 404 INQUIRY_AXIS_NOT_FOUND로 거부함
 - 탐구 축 테이블(inquiry_axis)의 초기 8종은 국어 1·수학 2·영어 3·사회 4·과학 5·예체능 6·동아리 7·진로 8(이름 뒤 sort_order)로 생성 마이그레이션에서 삽입됨
+- 탐구 축 이름 수정은 그 축을 쓰는 요청·업무 표시에도 그대로 반영됨
+- edu-fit-frontend는 학생 요청 상세(GET /api/student/tasks/:taskId)의 탐구 축 이름을 활성 탐구 축 목록(GET /api/inquiry-axes)에서 axisId로 찾음 — 상세 응답은 축 이름 없이 axisId만 줌
 
 ## 함정
 
 - 수업 과목 삭제는 기획서 CLS-26·BR-32의 '미참조 시 실제 삭제, 참조 시 비활성'과 달리 참조 여부와 무관하게 항상 소프트 삭제임(의도된 동작)
 - 수업 과목 이름 중복은 edu-fit-backend가 막지 않아(unique 제약 없음) 같은 이름의 과목도 추가됨 — 중복 판단은 edu-fit-frontend 몫임
 - 소프트 삭제된 수업 과목의 이름은 새 과목이 다시 쓸 수 있음
-- 탐구 축 이름 중복도 edu-fit-backend가 확인하지 않고 edu-fit-frontend가 판단함
 - 삭제된 탐구 축의 미분류는 시스템 행이 아니라 axisId null이므로 edu-fit-frontend가 '미분류 활동' 행으로 렌더함
