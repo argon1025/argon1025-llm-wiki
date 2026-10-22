@@ -23,3 +23,6 @@ description: 프론트엔드에 새 파일·기능 폴더를 만들거나 shared
 - import 방향은 app → features → shared만 허용함
 - 한 기능만 쓰던 코드를 다른 기능도 쓰게 되면 그 이슈에서 shared로 승격함
 - 기능 폴더는 auth·app-shell·members·inquiry-axes·consulting이며 각 화면 이슈가 자기 폴더를 만듦
+- consulting 기능의 ui 세그먼트에서 학생 요청 폼 파일은 하위 폴더 없이 task-form- 접두어를 붙여 평평하게 둠 — 학생 요청 목록·상세·등록·수정과 원장 업무 관리 화면이 한 ui 세그먼트를 함께 씀
+- consulting 기능은 원장 업무 화면의 학생 이름 검색·학생 상세 조회를 members의 studentQueries 대신 자체 쿼리(directorTaskQueries)로 둠 — consulting은 members를 import할 수 없음
+- 원장 업무 화면의 학생 이름 검색 디바운스(300ms)는 members의 useNameSearch 대신 FilterPicker 안에서 처리함 — consulting은 members를 import할 수 없음
