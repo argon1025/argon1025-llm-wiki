@@ -31,12 +31,14 @@ description: 학생 탐구 요청을 등록·수정·철회·숨김하거나 목
 ### 조회
 
 - 상세 응답의 첨부는 noticeFiles·workFiles로 나뉘어 연결 순서대로 오고 각 파일은 서명 다운로드 경로(downloadUrl)를 가짐
+- 상세(GET /api/student/tasks/:taskId)는 요청 시점의 학교급·학년·학기를 줌
 - 상세 응답의 담당자(assignee)는 { id, name } 또는 미배정 null임
 - 등록 뒤 탐구 축이 삭제되면 상세는 axisId를 null(미분류)로 반환함
 - 목록(GET /api/student/tasks)은 본인의 철회되지 않은 요청을 마감 기한·ID 오름차순으로 page(1~1000000, 기본 1)·limit(1~100, 기본 20) 페이지 { total, items }로 돌려주며 status 필터는 선택임
 - 목록의 hidden 생략·false는 본인이 숨긴 요청을 빼고 true는 숨긴 요청만 반환함
 - hidden을 status와 함께 주면 두 조건을 모두 적용하고, status를 생략한 hidden=true는 모든 상태의 숨긴 요청임
 - 캘린더(GET /api/student/tasks/calendar)는 마감 기한이 from~to(양끝 포함)인 본인 요청을 숨김 건까지 포함해 마감 기한·ID 오름차순 배열로 반환함
+- 캘린더는 from·to 범위 상한이 없고 status 필터가 없음
 - 캘린더에서 from이 to보다 늦거나 날짜 형식이 틀리면 400 INVALID_REQUEST임
 
 ### 수정
@@ -57,11 +59,14 @@ description: 학생 탐구 요청을 등록·수정·철회·숨김하거나 목
 
 - 학생 요청 API는 학생 토큰만 허용해 원장·선생 토큰은 403 FORBIDDEN, 토큰 없음은 401 UNAUTHORIZED임
 - 상세·수정·철회·숨김·복원에서 없는 업무·다른 학생의 업무·철회한 업무는 구분 없이 404 TASK_NOT_FOUND임
+- 요청 ID(taskId)가 정수가 아니면 400 INVALID_REQUEST임
 
 ### 프론트 판단 범위
 
 - edu-fit-backend는 빈 services 배열도 받은 그대로 저장함 — 요청 서비스 1개 이상 선택은 edu-fit-frontend가 판단함
-- edu-fit-backend는 수정·철회에서 업무 상태를 보지 않고 본인 요청 여부만 확인함 — 접수 상태 한정 수정·철회는 edu-fit-frontend가 판단함
+- edu-fit-backend는 수정·철회에서 업무 상태를 보지 않고 본인 요청 여부만 확인해 담당자 배정 뒤에도 저장·소프트 삭제를 받아들임 — 접수(RECEIVED) 상태 한정 수정·철회는 edu-fit-frontend가 판단함(canStudentEdit)
+- 학생 탐구 요청의 학교급·학년·학기는 edu-fit-frontend가 등록 때 프로필의 학교급·학년과 오늘 날짜의 학기로 정해 보내고(createBody) 학생이 바꿀 수 없으며 수정 PATCH에는 보내지 않음(patchBody)
+- edu-fit-frontend는 마감 기한(dueDate)을 등록·수정 모두 오늘(KST, 당일 포함) 이후만 허용하고 수정은 저장된 지난 날짜 유지만 허용함(validate) — edu-fit-backend는 형식·실재 여부만 검사해 지난 날짜도 받음
 
 ## 코드값
 

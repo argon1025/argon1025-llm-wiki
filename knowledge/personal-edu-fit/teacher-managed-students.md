@@ -6,7 +6,7 @@ description: 선생이 담당 학생 목록·상세를 조회하거나 학년을
 
 ## 적용 대상
 
-- edu-fit-backend의 선생 담당 학생 API — 원장·학생용 API는 제외
+- edu-fit-backend의 선생 담당 학생 API와 이를 호출하는 edu-fit-frontend — 원장·학생용 API는 제외
 
 ## 규칙
 
@@ -25,7 +25,7 @@ description: 선생이 담당 학생 목록·상세를 조회하거나 학년을
 - 목록은 이름 오름차순(동명이면 ID 오름차순)의 { total, items }로 응답함
 - 목록의 page는 1~1000000(기본 1), limit은 1~100(기본 20)이며 범위 밖이면 400 INVALID_REQUEST임
 - 목록의 name 필터는 부분 일치이고 LIKE 특수 문자(\ % _)는 글자 그대로 비교함
-- 목록·상세 응답의 relationTypes는 COURSE·CONSULTING 중 1개 이상을 COURSE → CONSULTING 순으로 나열함
+- 목록·상세 응답의 relationTypes는 COURSE·CONSULTING 중 1개 이상을 COURSE → CONSULTING 순으로 나열하며 1차에는 CONSULTING만 나옴
 - 상세 응답은 목록 항목 필드에 연락처(phone)를 더하며 연락처가 없으면 null임
 - 목록·상세는 비활성 학생도 포함하며 목록 항목·상세 응답의 회원 상태(status)로 활성(ACTIVE)·비활성(INACTIVE)을 구분함
 
@@ -34,3 +34,8 @@ description: 선생이 담당 학생 목록·상세를 조회하거나 학년을
 - 학년 수정은 schoolLevel·grade를 모두 필수로 받으며 누락·null·허용 외 학교급·미정의 필드는 400 INVALID_REQUEST임
 - 학년 수정의 grade는 1~255 정수이며 학교급별 학년 범위는 검증하지 않음
 - 학년을 저장하면 지정 학년도(gradeBaseYear)가 현재 학년도로 갱신되어 응답 표시 학년이 요청 학년과 같음
+
+## 함정
+
+- 목록 이름 검색(name)에 끝 공백이 붙은 '김 ' 같은 검색어를 보내면 빈 결과가 됨 — edu-fit-backend가 trim 없이 부분 일치로 비교해 edu-fit-frontend가 name을 trim해 보내고 비면 name 키를 뺌
+- 학년 수정의 학교급별 학년 범위(초등 1~6·중고 1~3)는 edu-fit-frontend의 학년 선택지가 제한함 — edu-fit-backend는 grade 1~255만 검증함

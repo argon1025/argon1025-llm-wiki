@@ -1,5 +1,5 @@
 ---
-description: shadcn 컴포넌트를 설치·수정하거나 치수·radius·hover·선택 상태를 맞출 때
+description: shadcn 컴포넌트를 설치·수정·조합하거나 치수·radius·hover·선택 상태를 맞출 때
 ---
 
 # UI 컴포넌트 규칙
@@ -56,6 +56,11 @@ description: shadcn 컴포넌트를 설치·수정하거나 치수·radius·hove
 
 - ToggleGroupItem의 data-[state=on]: 클래스는 동작하지 않음 — Base UI Toggle은 눌림 상태를 aria-pressed·data-pressed로만 표시하고 data-state를 붙이지 않음
 - Toggle·ToggleGroup 눌림 브랜드 채움은 toggleVariants의 aria-pressed:bg-primary가 담당함
+- 체크 카드마다 Field인 격자는 바깥을 Field 대신 FieldSet·FieldLegend로 감쌈 — shadcn Checkbox(group-has-disabled/field)는 가장 가까운 Field만이 아닌 모든 상위 Field에 반응해 잠긴 카드 하나가 모든 체크박스를 흐림
+- 다른 대화상자 안에서 여는 중첩 Dialog·AlertDialog 콘텐츠에는 shadow-2xl을 더해 부모와 구분함 — Base UI는 중첩 대화상자의 backdrop을 그리지 않아(Backdrop forceRender 기본 false) 부모 모달이 어두워지지 않음
+- 화면 검증 스크립트는 링크 버튼(nativeButton={false} render={<Link />})을 a[href]나 getByRole('button')으로 찾음 — Base UI가 `<a role="button">`으로 렌더링해 getByRole('link')에 잡히지 않음
+- 범례(FieldLegend) 옆 안내 문구는 FieldLegend에 flex 클래스를 주지 않고 인라인 span으로 붙임 — `<legend>`에 flex를 주면 폭이 내용의 최소 폭으로 줄어 범례가 단어마다 줄바꿈됨
+- date-fns format의 locale에는 react-day-picker 10의 ko(react-day-picker/locale)를 그대로 넘기고 date-fns 로케일을 따로 import하지 않음 — DayPickerLocale이 DateFnsLocale을 확장함
 
 ## 결정
 

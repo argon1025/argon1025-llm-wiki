@@ -22,12 +22,15 @@ description: 원장·선생 업무 목록·캘린더·상세나 배정 후보를
 - 목록 페이지 파라미터는 page 1~1000000(기본 1), limit 1~100(기본 20)임
 - `hidden` 생략·false면 요청자가 숨긴 업무를 빼고, true면 숨긴 업무만 반환함
 - `hidden`을 `status`와 함께 주면 두 조건을 모두 적용함
+- 업무 목록의 `status`는 한 값만 받아 복수·쉼표 구분 값은 400임
+- 업무 목록의 `hidden`은 문자열 `true`·`false`만 받음
 
 ### 필터
 
 - 원장 업무 목록은 `status`·`studentId`·`assigneeId`, 원장 업무 캘린더는 `studentId`·`assigneeId` 필터를 받음
 - 원장 업무 목록·캘린더의 담당자 필터(`assigneeId`)는 현재 담당자 기준임
 - 선생 업무 목록·캘린더는 `assigneeId`를 받지 않아 보내면 400임
+- 원장 업무 캘린더(`GET /api/director/tasks/calendar`)는 `status`·`hidden`을 받지 않아 보내면 400임
 - `studentId`·`assigneeId` 필터는 1~4294967295 정수만 받아 범위 밖 값은 빈 결과 대신 400 `INVALID_REQUEST`임
 
 ### 캘린더
@@ -52,3 +55,4 @@ description: 원장·선생 업무 목록·캘린더·상세나 배정 후보를
 ## 함정
 
 - 선생 업무 목록(`GET /api/teacher/tasks`)의 접수 상태 필터(`status=RECEIVED`)는 허용값이지만 항상 빈 결과임(정상) — 현재 담당 업무에는 접수 상태가 없음
+- 특정 선생의 진행 중 담당 업무 전체 건수는 원장 업무 목록(`GET /api/director/tasks`)을 `assigneeId`로 걸고 `hidden=false`·`hidden=true` 두 번 조회해 `total`을 더해야 함 — `hidden` 생략은 원장 본인이 숨긴 업무를 뺌
